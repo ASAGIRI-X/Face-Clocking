@@ -1,0 +1,1109 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b2a5b">
+<title>Face Clocking System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Light, mobile-first: navy app bar, white cards on cool grey, thumb-reach bottom nav (top rail on desktop) */
+:root{
+  --bg:#f2f5f9; --card:#ffffff; --line:#dbe2ec; --line2:#c7d1df; --fg:#0f1e36; --muted:#5a6a83;
+  --navy:#0b2a5b; --navy2:#123a7a; --blue:#0a84c9; --blue-bg:#e6f3fb;
+  --good:#11845b; --good-bg:#e4f5ee; --warn:#a96300; --warn-bg:#fdf1dc; --bad:#c23434; --bad-bg:#fbe7e7;
+  --f:"IBM Plex Sans Thai",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --nav-h:64px; color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--fg)}
+body{font-family:var(--f);font-size:15px;line-height:1.5;min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+[hidden]{display:none!important}
+.gut{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)} .small{font-size:13px}
+/* app bar */
+.bar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding-top:env(safe-area-inset-top)}
+.bar .in{display:flex;align-items:center;gap:10px;min-height:56px}
+.logo{height:34px;min-width:34px;border-radius:8px;background:#fff;color:var(--navy);display:grid;place-items:center;font-weight:700;font-size:14px;letter-spacing:.03em;padding:2px 6px;flex:none}
+.logo img{height:28px;width:auto;display:block}
+.bar h1{font-size:15px;margin:0;line-height:1.25;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:420px){.rolechip{display:none}.bar h1{font-size:14px}.lang button{padding:5px 7px}.iconbtn{width:36px}}
+.bar small{display:block;font-size:12px;opacity:.75;font-weight:400}
+.bar .sp{flex:1;min-width:0}
+.rolechip{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:rgba(255,255,255,.14)}
+.lang{display:flex;border:1px solid rgba(255,255,255,.35);border-radius:8px;overflow:hidden}
+.lang button{background:none;border:0;color:#fff;padding:5px 9px;font-size:12px;font-weight:600;cursor:pointer;opacity:.7}
+.lang button.on{background:#fff;color:var(--navy);opacity:1}
+#langLogin button{opacity:1}
+#langLogin button.on{background:var(--navy);color:#fff!important}
+.iconbtn{background:none;border:0;color:inherit;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;cursor:pointer}
+.iconbtn svg{width:22px;height:22px}
+.editbar{background:var(--warn-bg);color:var(--warn);font-size:13px;font-weight:600;padding-block:6px;text-align:center}
+.demo{background:#fff4d6;color:#7a5200;font-size:12px;text-align:center;padding:4px}
+/* nav */
+nav.bn{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding-bottom:env(safe-area-inset-bottom);padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+nav.bn button{flex:1;background:none;border:0;padding:8px 2px 6px;display:grid;justify-items:center;gap:2px;font-size:11px;color:var(--muted);cursor:pointer;min-height:var(--nav-h)}
+nav.bn button svg{width:24px;height:24px}
+nav.bn button.on{color:var(--navy);font-weight:600}
+nav.bn button.on svg{stroke:var(--blue)}
+main{padding-top:16px;padding-bottom:calc(var(--nav-h) + 24px + env(safe-area-inset-bottom));max-width:1100px;margin:0 auto}
+@media(min-width:900px){
+  nav.bn{position:sticky;top:56px;bottom:auto;border-top:0;border-bottom:1px solid var(--line);justify-content:center;gap:4px;padding:0}
+  nav.bn button{flex:0 0 auto;grid-auto-flow:column;gap:8px;padding:10px 16px;min-height:0;font-size:14px;border-bottom:3px solid transparent}
+  nav.bn button.on{border-bottom-color:var(--blue)}
+  nav.bn button svg{width:20px;height:20px}
+  main{padding-bottom:40px}
+}
+section.view{display:grid;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.card h2{font-size:17px;margin:0 0 12px;line-height:1.3}
+.card h3{font-size:13px;margin:0 0 8px;color:var(--muted);font-weight:600;letter-spacing:.03em;text-transform:uppercase}
+.cols{display:grid;gap:14px}
+@media(min-width:900px){.cols{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.fld{display:grid;gap:4px;font-size:13px;color:var(--muted);flex:1 1 150px;min-width:0}
+.fld.s{flex:1 1 140px}
+input[type=text],input[type=tel],input[type=password],input[type=date],input[type=time],input[type=number],input[type=search],input[type=datetime-local],select,textarea{width:100%;min-width:0;background:#fff;border:1px solid var(--line2);border-radius:10px;padding:11px 12px;font-size:16px;color:var(--fg)}
+textarea{min-height:150px;resize:vertical;font-size:14px}
+input[type=date],input[type=time],input[type=datetime-local]{-webkit-appearance:none;appearance:none;display:block;min-height:46px;line-height:1.3;text-align:left}
+input::-webkit-date-and-time-value{text-align:left;margin:0}
+input[type=date]::-webkit-calendar-picker-indicator,input[type=datetime-local]::-webkit-calendar-picker-indicator{margin-left:4px;opacity:.6}
+select{-webkit-appearance:none;appearance:none;min-height:46px;padding-right:34px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235a6a83' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
+.g2,.g3{display:grid;gap:10px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g2>.fld,.g3>.fld{flex:none}
+.span2{grid-column:1/-1}
+
+input:disabled,select:disabled,textarea:disabled{background:var(--bg);color:var(--muted)}
+:focus-visible{outline:3px solid rgba(10,132,201,.45);outline-offset:1px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border-radius:10px;border:1px solid var(--line2);background:#fff;font-weight:600;cursor:pointer;text-decoration:none;color:var(--fg)}
+.btn svg{width:20px;height:20px}
+.btn.pri{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn.blue{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.warn{color:var(--warn);border-color:#e5c58f;background:var(--warn-bg)}
+.btn.bad{color:var(--bad);border-color:#ebb4b4;background:#fff}
+.btn.ghost{border-color:transparent;background:none}
+.btn.block{width:100%}
+.btn.lg{min-height:58px;font-size:18px;border-radius:14px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.empty{border:1.5px dashed var(--line2);border-radius:12px;padding:20px;text-align:center;color:var(--muted)}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap;background:var(--bg);color:var(--muted)}
+.badge.g{background:var(--good-bg);color:var(--good)} .badge.w{background:var(--warn-bg);color:var(--warn)} .badge.b{background:var(--bad-bg);color:var(--bad)} .badge.i{background:var(--blue-bg);color:var(--blue)}
+/* login */
+.login{min-height:100vh;display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-left))}
+.login .box{width:min(380px,100%);display:grid;gap:16px;text-align:center}
+.login .logo{width:64px;height:64px;margin:0 auto;font-size:22px;border-radius:16px;background:var(--navy);color:#fff}
+.login .logo img{height:52px}
+.login h1{margin:0;font-size:22px}
+.pin{font-family:var(--mono);font-size:28px!important;letter-spacing:.4em;text-align:center}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.keypad button{min-height:58px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:22px;font-weight:600;cursor:pointer}
+.keypad button:active{background:var(--blue-bg)}
+.check{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:10px;background:var(--bg);cursor:pointer;text-align:left}
+.check input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:var(--navy)}
+/* clock */
+.clockhead{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.bigtime{font-family:var(--mono);font-weight:600;font-size:clamp(40px,13vw,60px);line-height:1;letter-spacing:-.02em;color:var(--navy)}
+.step{display:grid;gap:8px}
+.lbl{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--muted)}
+.lbl b{width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:12px}
+.lbl.done b{background:var(--good)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.chips button{flex:0 0 auto;min-height:48px;padding:8px 14px;border-radius:12px;border:1.5px solid var(--line2);background:#fff;cursor:pointer;text-align:left;display:grid;line-height:1.25}
+.chips button small{font-family:var(--mono);color:var(--muted);font-size:12px}
+.chips button.on{border-color:var(--navy);background:var(--navy);color:#fff}
+.chips button.on small{color:#cfe0f7}
+.seg{display:flex;border:1.5px solid var(--line2);border-radius:12px;overflow:hidden;background:#fff}
+.seg button{flex:1;min-height:44px;border:0;background:none;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--blue-bg);color:var(--navy)}
+.cam{position:relative;border-radius:16px;overflow:hidden;background:#0b1424;aspect-ratio:4/3;max-width:100%}
+.cam video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:block}
+.cam .frame{position:absolute;inset:12% 22%;border:3px solid rgba(255,255,255,.7);border-radius:45% 45% 40% 40%;pointer-events:none;transition:border-color .2s}
+.cam.hit .frame{border-color:#3fd18f}
+.cam .hint{position:absolute;left:0;right:0;bottom:0;padding:10px 14px;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff;font-size:14px;font-weight:500}
+.cam .off{position:absolute;inset:0;display:grid;place-items:center;color:#c9d6ea;text-align:center;padding:20px}
+.result{display:grid;grid-template-columns:76px 1fr;gap:14px;align-items:center;border-radius:14px;padding:14px;border:2px solid var(--line)}
+.result .ph{width:76px;height:76px;border-radius:12px;object-fit:cover;background:var(--bg)}
+.result .act{font-size:22px;font-weight:700;line-height:1.2}
+.result.in{border-color:var(--good);background:var(--good-bg)} .result.in .act{color:var(--good)}
+.result.out{border-color:var(--blue);background:var(--blue-bg)} .result.out .act{color:var(--blue)}
+.result.fail{border-color:var(--bad);background:var(--bad-bg)} .result.fail .act{color:var(--bad)}
+.result.dup{border-color:var(--warn);background:var(--warn-bg)} .result.dup .act{color:var(--warn)}
+.feed{display:grid;gap:6px}
+.feed .it{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;padding:8px;border-radius:10px;background:var(--bg)}
+.thumb{width:40px;height:40px;border-radius:10px;object-fit:cover;background:#e3e9f2;display:block}
+/* register */
+.steps{display:flex;gap:6px}
+.steps span{flex:1;height:5px;border-radius:9px;background:var(--line)}
+.steps span.on{background:var(--navy)}
+.consent{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;max-height:300px;overflow:auto;font-size:14px;white-space:pre-wrap}
+.sig{position:relative;background:#fff;border:1.5px solid var(--line2);border-radius:12px;touch-action:none}
+.sig canvas{display:block;width:100%;height:170px}
+.sig .ln{position:absolute;left:16px;right:16px;bottom:34px;border-bottom:1px dashed var(--line2);pointer-events:none}
+.sig .ph{position:absolute;left:16px;bottom:10px;font-size:12px;color:var(--muted);pointer-events:none}
+.shots{display:flex;gap:10px;flex-wrap:wrap}
+.shots img{width:84px;height:84px;border-radius:12px;object-fit:cover;border:3px solid var(--good)}
+/* lists & tables */
+.plist{display:grid;gap:8px}
+.pitem{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.pitem .thumb{width:44px;height:44px}
+.pitem .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pitem .bd{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{background:#f6f8fb;color:var(--muted);font-size:12px;font-weight:600;position:sticky;top:0}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+tfoot td{font-weight:700;background:#f6f8fb}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--blue-bg)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.kpi{background:var(--bg);border-radius:12px;padding:12px}
+.kpi b{display:block;font-family:var(--mono);font-size:22px;color:var(--navy);font-variant-numeric:tabular-nums}
+.kpi span{font-size:12px;color:var(--muted)}
+/* settings */
+.li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end;padding:10px;border:1px solid var(--line);border-radius:12px}
+.shiftc{border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:10px}
+.otr{display:grid;gap:8px;padding:10px 12px 12px;border-radius:12px;background:var(--bg)}
+.otr .oh{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:600;color:var(--muted);min-height:32px}
+.otr .xbtn{width:34px;height:34px;font-size:15px;border-radius:8px}
+.tm,.num{font-family:var(--mono);text-align:center;padding-left:6px!important;padding-right:6px!important;font-variant-numeric:tabular-nums}
+.dt{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:8px}
+.shiftc .hd{display:flex;align-items:center;gap:10px}
+.shiftc .hd .code{font-family:var(--mono);font-weight:600;color:var(--navy);background:var(--blue-bg);padding:3px 10px;border-radius:8px}
+.li{grid-template-columns:minmax(0,1fr) 46px}
+.li .g3{grid-template-columns:minmax(0,.7fr) minmax(0,1fr) minmax(0,1fr)}
+@media(max-width:520px){.li .g3{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.li .g3 .fld:first-child{grid-column:1/-1}}
+.xbtn{width:46px;height:46px;flex:none;border-radius:10px;border:1px solid #ebb4b4;background:#fff;color:var(--bad);cursor:pointer;font-size:18px}
+.lock{padding:12px;border-radius:12px;background:var(--warn-bg);color:var(--warn);font-size:14px}
+/* modal / toast */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(9,20,40,.5);display:flex;align-items:flex-end;justify-content:center}
+.modal .box{background:#fff;width:min(560px,100%);max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px max(18px,env(safe-area-inset-left)) calc(18px + env(safe-area-inset-bottom));display:grid;gap:12px}
+@media(min-width:700px){.modal{align-items:center}.modal .box{border-radius:18px}}
+.modal h2{margin:0;font-size:18px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom));z-index:60;background:var(--fg);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;max-width:calc(100% - 32px)}
+.prog{height:8px;border-radius:9px;background:var(--line);overflow:hidden}
+.prog i{display:block;height:100%;background:var(--blue);width:0}
+@media(prefers-reduced-motion:no-preference){.result{animation:pop .25s ease-out}@keyframes pop{from{transform:scale(.97);opacity:.5}to{transform:none;opacity:1}}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login" id="login">
+  <div class="box">
+    <div class="logo" id="loginLogo">ZF</div>
+    <div><h1 data-t="appTitle">Face Clocking</h1><div class="muted" id="loginSite"></div></div>
+    <div class="lang" style="justify-self:center;border-color:var(--line2)" id="langLogin"><button data-lang="th" style="color:var(--navy)">TH</button><button data-lang="en" style="color:var(--navy)">EN</button></div>
+    <input type="password" inputmode="numeric" autocomplete="off" class="pin" id="pinIn" maxlength="12" data-tp="pinPh">
+    <div class="keypad" id="keypad"></div>
+    <label class="check"><input type="checkbox" id="rememberPin"><span data-t="remember">Remember on this device</span></label>
+    <button class="btn pri lg block" id="loginBtn" data-t="signIn">Sign in</button>
+    <div class="small" id="loginMsg" style="color:var(--bad)"></div>
+    <button class="btn ghost" id="demoBtn" data-t="tryDemo">Try demo</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" hidden>
+  <header class="bar">
+    <div class="in gut">
+      <div class="logo" id="logo">ZF</div>
+      <div class="sp"><h1 data-t="barTitle">Face Clocking</h1><small id="siteName"></small></div>
+      <span class="rolechip" id="roleChip"></span>
+      <div class="lang" id="langApp"><button data-lang="th">TH</button><button data-lang="en">EN</button></div>
+      <button class="iconbtn" id="editBtn" hidden aria-label="Edit mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
+      <button class="iconbtn" id="logoutBtn" aria-label="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5M5 12h11"/></svg></button>
+    </div>
+    <div class="editbar" id="editBar" hidden data-t="editOn">Edit Mode</div>
+    <div class="demo" id="demoBar" hidden data-t="demoBar">Demo</div>
+  </header>
+  <nav class="bn" id="nav"></nav>
+
+  <main class="gut">
+    <!-- CLOCK -->
+    <section class="view" id="v-clock" hidden>
+      <div class="card clockhead">
+        <div><div class="bigtime" id="bigTime">--:--</div><div class="muted small" id="bigDate"></div></div>
+        <div style="display:grid;gap:4px;justify-items:end"><span class="badge" id="modelBadge"></span><span class="badge" id="geoBadge"></span></div>
+      </div>
+      <div class="cols">
+        <div class="card" style="display:grid;gap:14px">
+          <div class="step"><div class="lbl" id="lblLoc"><b>1</b><span data-t="pickLoc">Location</span></div><div class="chips" id="locChips"></div></div>
+          <div class="step"><div class="lbl" id="lblShift"><b>2</b><span data-t="pickShift">Shift</span></div><div class="chips" id="shiftChips"></div></div>
+          <div class="step"><div class="lbl"><b>3</b><span data-t="pickMode">Type</span></div>
+            <div class="seg" id="modeSeg"><button data-m="auto" data-t="mAuto">Auto</button><button data-m="in" data-t="mIn">In</button><button data-m="out" data-t="mOut">Out</button></div></div>
+          <div class="cam" id="cam"><video id="video" playsinline muted></video><div class="frame"></div><div class="hint" id="camHint"></div><div class="off" id="camOff"></div></div>
+          <div class="row">
+            <button class="btn blue lg" id="camBtn" style="flex:1 1 180px"></button>
+            <label class="btn lg" id="photoBtn" style="flex:1 1 140px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span data-t="takeScan">Photo scan</span><input type="file" accept="image/*" capture="user" id="scanFile" hidden></label>
+          </div>
+          <div id="scanResult"></div>
+        </div>
+        <div class="card">
+          <h2><span data-t="feed">Today</span> <span class="muted mono small" id="feedDate"></span></h2>
+          <div class="feed" id="feed"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REGISTER -->
+    <section class="view" id="v-register" hidden>
+      <div class="card" style="display:grid;gap:12px">
+        <div class="seg" id="regKind"><button data-k="new" data-t="regNew">New employee</button><button data-k="exist" data-t="regExist">Imported employee</button></div>
+        <div class="steps" id="regSteps"><span></span><span></span><span></span></div>
+      </div>
+      <!-- step 1 -->
+      <div class="card" id="rs1">
+        <h2 data-t="s1">1 · Employee details</h2>
+        <div id="pickExist" class="fld" style="margin-bottom:10px" hidden><span data-t="pickEmp">Choose employee</span><select id="r-exist"></select></div>
+        <div class="g2">
+          <label class="fld"><span data-t="empId">Employee ID</span><input type="text" id="r-id" class="mono" autocomplete="off"></label>
+          <label class="fld"><span data-t="nick">Nickname</span><input type="text" id="r-nick" autocomplete="off"></label>
+        </div>
+        <div class="g2" style="margin-top:10px">
+          <label class="fld"><span data-t="first">First name</span><input type="text" id="r-first" autocomplete="off"></label>
+          <label class="fld"><span data-t="last">Last name</span><input type="text" id="r-last" autocomplete="off"></label>
+        </div>
+        <div class="g2" style="margin-top:10px">
+          <label class="fld"><span data-t="dob">Date of birth</span><input type="date" id="r-dob"></label>
+          <label class="fld"><span data-t="phone">Phone</span><input type="tel" id="r-phone" class="mono" inputmode="tel"></label>
+        </div>
+        <div class="g2" style="margin-top:10px">
+          <label class="fld"><span data-t="defLoc">Location</span><select id="r-loc"></select></label>
+          <label class="fld"><span data-t="defShift">Shift</span><select id="r-shift"></select></label>
+        </div>
+        <button class="btn pri lg block" style="margin-top:14px" id="rs1Next" data-t="next">Next</button>
+      </div>
+      <!-- step 2 -->
+      <div class="card" id="rs2" hidden style="gap:12px">
+        <h2 data-t="s2">2 · PDPA consent</h2>
+        <div class="consent" id="consentText"></div>
+        <div class="small muted" style="margin:8px 0 10px"><span data-t="ver">Version</span> <span class="mono" id="consentVer"></span></div>
+        <div style="display:grid;gap:8px">
+          <label class="check"><input type="checkbox" id="c1"><span data-t="c1">General consent</span></label>
+          <label class="check"><input type="checkbox" id="c2"><span data-t="c2">Biometric consent</span></label>
+        </div>
+        <h3 style="margin-top:14px" data-t="sign">Signature</h3>
+        <div class="sig"><div class="ln"></div><span class="ph" data-t="signHint">Sign here</span><canvas id="sigCv"></canvas></div>
+        <div class="row" style="margin-top:12px"><button class="btn" id="sigClr" data-t="clear">Clear</button><span style="flex:1"></span><button class="btn" id="rs2Back" data-t="back">Back</button><button class="btn pri" id="rs2Next" data-t="next">Next</button></div>
+      </div>
+      <!-- step 3 -->
+      <div class="card" id="rs3" hidden>
+        <h2 data-t="s3">3 · Face</h2>
+        <p class="muted small" style="margin-top:0" data-t="faceHint">Take photos</p>
+        <div class="cam" id="regCam" hidden><video id="regVideo" playsinline muted></video><div class="frame"></div></div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn blue" id="regSnap" hidden data-t="snap">Capture</button>
+          <label class="btn"><span data-t="photoUp">Take / choose photo</span><input type="file" accept="image/*" capture="user" id="regFile" hidden></label>
+        </div>
+        <div class="shots" id="shots" style="margin-top:12px"></div>
+        <div class="small" id="shotMsg" style="margin-top:6px"></div>
+        <p class="small muted" data-t="faceLater">You can add face later</p>
+        <div class="row" style="margin-top:8px"><button class="btn" id="rs3Back" data-t="back">Back</button><span style="flex:1"></span><button class="btn pri lg" id="regSave" data-t="save">Save</button></div>
+      </div>
+    </section>
+
+    <!-- PEOPLE -->
+    <section class="view" id="v-people" hidden>
+      <div class="card" style="display:grid;gap:10px">
+        <div class="row"><label class="fld"><input type="search" id="pq" data-tp="searchPh"></label>
+          <select id="pf" style="flex:0 1 190px"><option value="" data-t="fAll">All</option><option value="noconsent" data-t="fNoConsent">No consent</option><option value="noface" data-t="fNoFace">No face</option></select></div>
+        <div class="row" id="peopleTools">
+          <label class="btn" id="bulkBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg><span data-t="bulkFace">Upload faces</span><input type="file" accept="image/*" multiple id="bulkFile" hidden></label>
+          <span class="small muted" data-t="bulkHint">Name files by Employee ID</span>
+        </div>
+        <div id="bulkProg" hidden><div class="prog"><i id="bulkBar"></i></div><div class="small muted" id="bulkTxt" style="margin-top:4px"></div></div>
+      </div>
+      <div class="card"><h2><span data-t="people">Employees</span> <span class="muted mono small" id="pcount"></span></h2><div class="plist" id="plist"></div></div>
+    </section>
+
+    <!-- REPORT -->
+    <section class="view" id="v-report" hidden>
+      <div class="card" style="display:grid;gap:10px">
+        <div class="g2">
+          <label class="fld"><span data-t="from">From</span><input type="date" id="rpf"></label>
+          <label class="fld"><span data-t="to">To</span><input type="date" id="rpt"></label>
+          <label class="fld"><span data-t="loc">Location</span><select id="rpl"></select></label>
+          <label class="fld"><span data-t="shift">Shift</span><select id="rps"></select></label>
+          <label class="fld span2"><input type="search" id="rpq" data-tp="searchPh"></label>
+        </div>
+        <div class="g3"><button class="btn pri" id="rpLoad" data-t="show">Show</button><button class="btn" id="rpXls" data-t="excel">Excel</button><button class="btn warn" id="rpAdd" hidden data-t="addRec">Add</button></div>
+      </div>
+      <div class="card" id="rpBody"></div>
+    </section>
+
+    <!-- PAYROLL -->
+    <section class="view" id="v-pay" hidden>
+      <div class="card" style="display:grid;gap:10px">
+        <div class="seg" id="pyPre"><button data-p="this" data-t="thisM">This month</button><button data-p="last" data-t="lastM">Last month</button><button data-p="cut" data-t="cut">21–20</button></div>
+        <div class="g2">
+          <label class="fld"><span data-t="from">From</span><input type="date" id="pyf"></label>
+          <label class="fld"><span data-t="to">To</span><input type="date" id="pyt"></label>
+          <label class="fld span2"><span data-t="loc">Location</span><select id="pyl"></select></label>
+        </div>
+        <div class="g2"><button class="btn pri" id="pyLoad" data-t="show">Show</button><button class="btn" id="pyXls" data-t="excel">Excel</button></div>
+      </div>
+      <div class="card"><div class="kpis" id="pyK"></div></div>
+      <div class="card"><div id="pyBody"></div><p class="small muted" id="pyNote" style="margin:10px 0 0"></p></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view" id="v-set" hidden>
+      <div class="lock" id="setLock"></div>
+      <div class="card" id="impCard">
+        <h2 data-t="impTitle">Import from template</h2>
+        <p class="small muted" style="margin-top:0" data-t="impHint">Import hint</p>
+        <div class="row"><button class="btn" id="tplBtn" data-t="tplDl">Download template</button>
+          <label class="btn warn"><span data-t="impUp">Choose file</span><input type="file" id="impFile" accept=".xlsx,.xls,.csv" hidden></label></div>
+        <div id="impPrev" style="margin-top:10px"></div>
+      </div>
+      <div class="card"><div class="row" style="justify-content:space-between;align-items:center;margin-bottom:10px"><h2 style="margin:0" data-t="locs">Locations</h2><button class="btn warn ed" id="addLoc" data-t="addLoc">Add</button></div><div style="display:grid;gap:8px" id="locList"></div></div>
+      <div class="card"><div class="row" style="justify-content:space-between;align-items:center;margin-bottom:10px"><h2 style="margin:0" data-t="shifts">Shifts & OT</h2><button class="btn warn ed" id="addShift" data-t="addShift">Add shift</button></div><div style="display:grid;gap:10px" id="shiftList"></div></div>
+      <div class="card"><h2 data-t="rules">Rules</h2><div class="g3">
+        <label class="fld"><span data-t="grace">Late grace</span><input type="number" id="sGrace" class="num" min="0"></label>
+        <label class="fld"><span data-t="round">OT rounding</span><input type="number" id="sRound" class="num" min="0"></label>
+        <label class="fld"><span data-t="thr">Match threshold</span><input type="number" id="sThr" class="num" step="0.01" min="0.3" max="0.7"></label></div></div>
+      <div class="card" id="pinCard"><h2 data-t="pins">PINs</h2><p class="small muted" style="margin-top:0" data-t="pinHint">Blank keeps current</p><div class="g3">
+        <label class="fld"><span>Admin</span><input type="password" id="pA" class="mono" inputmode="numeric" autocomplete="new-password"></label>
+        <label class="fld"><span>Leader</span><input type="password" id="pL" class="mono" inputmode="numeric" autocomplete="new-password"></label>
+        <label class="fld"><span>Viewer</span><input type="password" id="pV" class="mono" inputmode="numeric" autocomplete="new-password"></label></div></div>
+      <div class="card"><h2 data-t="brand">Logo & site</h2><div class="g2">
+        <label class="fld"><span data-t="siteName">Site name</span><input type="text" id="sSite"></label>
+        <label class="fld"><span data-t="logoUrl">Logo URL</span><input type="text" id="sLogo" placeholder="https://…"></label></div>
+        <div class="row" style="margin-top:8px"><label class="btn ed"><span data-t="logoFile">Use image file</span><input type="file" id="logoFile" accept="image/*" hidden></label></div></div>
+      <div class="card"><h2 data-t="consentAdm">Consent text</h2><p class="small muted" style="margin-top:0" data-t="consentRev">Review with HR</p>
+        <label class="fld s"><span data-t="ver">Version</span><input type="text" id="sVer" class="mono"></label>
+        <div class="cols" style="margin-top:10px"><label class="fld"><span>ภาษาไทย</span><textarea id="sTh"></textarea></label><label class="fld"><span>English</span><textarea id="sEn"></textarea></label></div></div>
+      <div class="card ed"><div class="row" style="justify-content:flex-end"><span class="small muted" id="saveMsg" style="flex:1"></span><button class="btn pri lg" id="saveSet" data-t="saveSet">Save settings</button></div></div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="modal" hidden><div class="box" id="mbox"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/dist/face-api.js"></script>
+<script>
+"use strict";
+/* ============ CONFIG — paste your Apps Script web app URL here when hosting outside Apps Script ============ */
+const CONFIG = {
+  API_URL: 'https://script.google.com/macros/s/AKfycbxQuGA0GWlCOigI2jvBzI3NXo-6SrKlBTS77z2Nfduxg9mLNj6xDqa4F_PKRMrrBkiK/exec',
+  MODEL_URL: 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model/',
+  XLSX_URL: 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
+};
+</script>
+<script>
+"use strict";
+/* ---------------- consent defaults ---------------- */
+const CONSENT_TH = `หนังสือให้ความยินยอมในการเก็บรวบรวม ใช้ และเปิดเผยข้อมูลส่วนบุคคล
+
+1) ข้อมูลที่เก็บรวบรวม
+ชื่อ-นามสกุล ชื่อเล่น รหัสพนักงาน วันเดือนปีเกิด เบอร์โทรศัพท์ ภาพถ่ายใบหน้า และข้อมูลแม่แบบใบหน้า (Face template) ซึ่งเป็นข้อมูลชีวภาพ (Biometric data) อันเป็นข้อมูลส่วนบุคคลที่มีความอ่อนไหวตามมาตรา 26 แห่ง พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 รวมถึงลายมือชื่อในหนังสือฉบับนี้ และบันทึกเวลาเข้า-ออกงาน
+
+2) วัตถุประสงค์
+เพื่อยืนยันตัวตนในการบันทึกเวลาเข้า-ออกงาน คำนวณชั่วโมงทำงานและค่าล่วงเวลา (OT) สำหรับการจ่ายค่าจ้าง และการบริหารงานบุคคลที่เกี่ยวข้องเท่านั้น
+
+3) ผู้มีสิทธิเข้าถึงข้อมูล
+ผู้ดูแลระบบ หัวหน้างาน และฝ่ายบุคคลที่ได้รับมอบหมาย บริษัทฯ จะไม่เปิดเผยข้อมูลแก่บุคคลภายนอก เว้นแต่กฎหมายกำหนด
+
+4) ระยะเวลาการเก็บรักษา
+ตลอดระยะเวลาการจ้างงาน ข้อมูลใบหน้าจะถูกลบเมื่อสิ้นสุดการจ้างงาน หรือเมื่อท่านถอนความยินยอม บันทึกเวลาทำงานจะเก็บไว้ตามระยะเวลาที่กฎหมายแรงงานกำหนด
+
+5) สิทธิของเจ้าของข้อมูล
+ท่านมีสิทธิขอเข้าถึง ขอรับสำเนา ขอแก้ไข ขอลบ คัดค้าน และถอนความยินยอมได้ทุกเมื่อ โดยแจ้งผู้ดูแลระบบหรือฝ่ายบุคคล
+
+6) ความสมัครใจ
+การให้ความยินยอมเป็นไปโดยสมัครใจ การไม่ให้หรือถอนความยินยอมไม่มีผลต่อการจ้างงาน ท่านสามารถใช้วิธีบันทึกเวลาแบบอื่นแทนได้`;
+const CONSENT_EN = `Consent to the Collection, Use and Disclosure of Personal Data
+
+1) Data collected
+Full name, nickname, employee ID, date of birth, phone number, face photos and a face template, which is biometric data and sensitive personal data under Section 26 of the Thai Personal Data Protection Act B.E. 2562 (2019), plus your signature on this form and your clock-in/out records.
+
+2) Purpose
+To verify your identity when clocking in and out, to calculate working hours and overtime (OT) for payroll, and for related HR administration only.
+
+3) Who can access the data
+The system administrator, assigned supervisors and HR. The company will not disclose the data to third parties unless required by law.
+
+4) Retention
+For the duration of your employment. Face data is deleted when employment ends or when you withdraw consent. Time records are kept for the period required by labour law.
+
+5) Your rights
+You may request access, a copy, correction or deletion of your data, object to processing, and withdraw consent at any time by contacting the system administrator or HR.
+
+6) Voluntary consent
+Consent is voluntary. Refusing or withdrawing consent does not affect your employment; you may use another clocking method instead.`;
+
+/* ---------------- i18n ---------------- */
+const T = {
+th:{appTitle:"ระบบลงเวลาด้วยใบหน้า",barTitle:"ลงเวลาด้วยใบหน้า",pinPh:"PIN",remember:"จำ PIN บนเครื่องนี้ (สำหรับเครื่อง Kiosk ของหัวหน้างาน)",signIn:"เข้าสู่ระบบ",tryDemo:"ทดลองโหมด Demo (ข้อมูลตัวอย่าง)",
+ badPin:"PIN ไม่ถูกต้อง",notConfigured:"ยังไม่ได้ตั้ง AdminPIN ในชีต SETTINGS",noApi:"ยังไม่ได้ใส่ API_URL ในไฟล์ — ใช้โหมด Demo ได้",netErr:"เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจสอบอินเทอร์เน็ต",
+ editOn:"โหมดแก้ไขเปิดอยู่",demoBar:"โหมด DEMO · ข้อมูลตัวอย่างเก็บเฉพาะในเครื่องนี้",
+ nClock:"ลงเวลา",nReg:"ลงทะเบียน",nPeople:"พนักงาน",nReport:"รายงาน",nPay:"สรุปจ่าย",nSet:"ตั้งค่า",
+ rAdmin:"Admin",rLeader:"Leader",rViewer:"Viewer",
+ pickLoc:"เลือก Location",pickShift:"เลือกกะ",pickMode:"ประเภท",mAuto:"อัตโนมัติ",mIn:"เข้างาน",mOut:"ออกงาน",
+ camStart:"เปิดกล้องสแกน",camStop:"หยุดกล้อง",takeScan:"ถ่ายรูปสแกน",camNo:"อุปกรณ์หรือหน้านี้เปิดกล้อง live ไม่ได้ ใช้ปุ่ม ถ่ายรูปสแกน แทน",
+ camIdle:"เลือก Location และกะ แล้วกดเปิดกล้อง",lookCam:"มองกล้อง ให้ใบหน้าอยู่ในกรอบ",unknown:"ไม่รู้จักใบหน้านี้",already:"ลงเวลาไปแล้วเมื่อสักครู่",
+ mLoad:"กำลังโหลดโมเดล…",mReady:"พร้อมสแกน",mFail:"โหลดโมเดลไม่ได้",needPick:"เลือก Location และกะก่อน",noLoc:"ยังไม่มี Location — Admin เพิ่มได้ที่ ตั้งค่า",
+ feed:"ลงเวลาวันทำงานนี้",noScan:"ยังไม่มีการลงเวลา",noFace:"ไม่พบใบหน้าในภาพ ถ่ายใหม่ให้หน้าตรง แสงพอ",noMatch:"ไม่พบพนักงานที่ตรงกับใบหน้า",noFaces:"ยังไม่มีพนักงานที่ลงทะเบียนใบหน้า",
+ cIn:"เข้างาน",cOut:"ออกงาน",cDup:"ลงเวลาไปแล้ว",undo:"ยกเลิกรายการ",undone:"ยกเลิกแล้ว",match:"ตรงกัน",late:"สาย",min:"นาที",
+ regNew:"พนักงานใหม่",regExist:"จาก Import",s1:"1 · ข้อมูลพนักงาน",s2:"2 · ความยินยอม PDPA",s3:"3 · ใบหน้า",pickEmp:"เลือกพนักงาน (ยังไม่ได้ลงนามยินยอม)",
+ empId:"รหัสพนักงาน",nick:"ชื่อเล่น",first:"ชื่อ",last:"นามสกุล",dob:"วันเดือนปีเกิด",phone:"เบอร์โทรศัพท์",defLoc:"Location ประจำ",defShift:"กะประจำ",
+ next:"ถัดไป",back:"ย้อนกลับ",save:"บันทึก",cancel:"ยกเลิก",clear:"ล้าง",del:"ลบ",confirm:"ยืนยัน",edit:"แก้ไข",close:"ปิด",
+ ver:"ฉบับที่",c1:"ข้าพเจ้าได้อ่านและเข้าใจหนังสือนี้แล้ว และยินยอมให้เก็บรวบรวม ใช้ และเปิดเผยข้อมูลส่วนบุคคลของข้าพเจ้าตามวัตถุประสงค์ข้างต้น",
+ c2:"ข้าพเจ้ายินยอมโดยชัดแจ้งให้เก็บและใช้ข้อมูลชีวภาพ (ภาพและแม่แบบใบหน้า) เพื่อยืนยันตัวตนในการลงเวลาทำงาน",
+ sign:"ลายมือชื่อพนักงาน",signHint:"เซ็นชื่อด้วยนิ้วในกรอบนี้",faceHint:"ถ่าย 1–3 ภาพ หน้าตรง ไม่สวมหน้ากาก/แว่นดำ แสงสว่างพอ",snap:"ถ่ายจากกล้อง",photoUp:"ถ่าย/เลือกรูป",faceLater:"ข้ามขั้นนี้ได้ แล้วค่อยอัปโหลดรูปภายหลังที่หน้า พนักงาน",
+ faceOk:"พบใบหน้า",dupFace:"ใบหน้านี้คล้ายกับ",needInfo:"กรอกรหัส ชื่อ และนามสกุล",needConsent:"ติ๊กยินยอมทั้ง 2 ข้อและเซ็นชื่อ",idExists:"รหัสพนักงานนี้ลงทะเบียนแล้ว",saved:"บันทึกแล้ว",regDone:"ลงทะเบียนเรียบร้อย",
+ people:"รายชื่อพนักงาน",searchPh:"ค้นหารหัส / ชื่อ",fAll:"ทั้งหมด",fNoConsent:"ยังไม่ยินยอม",fNoFace:"ยังไม่มีใบหน้า",bulkFace:"อัปโหลดรูปใบหน้าหลายคน",bulkHint:"ตั้งชื่อไฟล์เป็นรหัสพนักงาน เช่น 10023.jpg",
+ noPeople:"ยังไม่มีพนักงาน — Import จาก Template ที่หน้า ตั้งค่า หรือเพิ่มที่หน้า ลงทะเบียน",
+ kE:"ยินยอม (e-sign)",kP:"ยินยอม (กระดาษ)",kN:"ยังไม่ยินยอม",kW:"ถอนความยินยอม",fY:"มีใบหน้า",fN:"ไม่มีใบหน้า",inactive:"ไม่ใช้งาน",
+ bulkRes:"สำเร็จ {ok} · ข้าม {skip}",bulkNoEmp:"ไม่พบรหัส",bulkNoConsent:"ยังไม่ยินยอม",bulkNoFace:"ไม่พบใบหน้า",
+ from:"ตั้งแต่",to:"ถึง",loc:"Location",shift:"กะ",all:"ทั้งหมด",show:"แสดงผล",excel:"Excel",addRec:"เพิ่มรายการ",
+ date:"วันที่",name:"ชื่อ",in:"เข้า",out:"ออก",normal:"ปกติ (ชม.)",ot:"OT (ชม.)",otEq:"OT ×1",status:"สถานะ",open:"ไม่ได้ลงออก",ok:"ครบ",noData:"ไม่พบข้อมูลในช่วงนี้",rows:"รายการ",
+ thisM:"เดือนนี้",lastM:"เดือนก่อน",cut:"งวด 21–20",days:"วัน",lateMin:"สาย (นาที)",openCnt:"ไม่ลงออก",wage:"ค่าแรง/ชม.",pay:"ประมาณการจ่าย",
+ kEmp:"พนักงาน",kNorm:"ชม.ปกติ",kOt:"ชม. OT",kOtEq:"OT เทียบ ×1",kPay:"ยอดประมาณการ",
+ payNote:"OT เทียบ ×1 = ชั่วโมง OT × อัตราแรง นำไปคูณค่าแรงรายชั่วโมงได้ทันที รายการที่ไม่ได้ลงเวลาออกจะไม่นับชั่วโมง ให้ Admin แก้ในหน้า รายงาน ก่อนปิดงวด",
+ setLockA:"แตะไอคอนดินสอมุมขวาบนเพื่อเปิด โหมดแก้ไข",setLockO:"ดูได้อย่างเดียว",
+ impTitle:"Import ข้อมูลจาก Template",impHint:"ดาวน์โหลด Template กรอกชีต Locations / Shifts / OT / Employees แล้วอัปโหลดกลับ ชีตที่ไม่มีข้อมูลจะไม่ถูกแตะ · Locations, Shifts, OT จะแทนที่ของเดิมทั้งชุด · Employees จะเพิ่มหรืออัปเดตตามรหัส ไม่ลบคนเดิม · รูปใบหน้าอัปโหลดแยกที่หน้า พนักงาน",
+ tplDl:"ดาวน์โหลด Template",impUp:"เลือกไฟล์ Import",impConfirm:"ยืนยัน Import",impDone:"Import เสร็จ",impSheets:"พบข้อมูล",
+ locs:"Locations",addLoc:"เพิ่ม",shifts:"กะและ OT (Roster)",addShift:"เพิ่มกะ",code:"รหัส",nameTh:"ชื่อไทย",nameEn:"ชื่ออังกฤษ",start:"เข้างาน",end:"เลิกงาน",brk:"พัก (นาที)",otP:"ช่วง OT",addOt:"เพิ่มช่วง OT",rate:"แรง ×",
+ rules:"กฎการคำนวณ",grace:"ผ่อนผันสาย (นาที)",round:"ปัด OT ลงทุก (นาที)",thr:"เกณฑ์จับคู่ใบหน้า",pins:"PIN เข้าระบบ",pinHint:"เว้นว่าง = ใช้ PIN เดิม · แนะนำ 6 หลักขึ้นไป",
+ brand:"โลโก้และชื่อไซต์",siteName:"ชื่อไซต์",logoUrl:"ลิงก์โลโก้",logoFile:"ใช้ไฟล์รูปโลโก้",consentAdm:"ข้อความหนังสือยินยอม",consentRev:"ควรให้ HR / DPO ตรวจก่อนใช้งานจริง แก้ข้อความแล้วให้เปลี่ยนเลขฉบับ เว้นว่าง = ใช้ข้อความมาตรฐาน",saveSet:"บันทึกการตั้งค่า",
+ editEmp:"แก้ไขพนักงาน",active:"ใช้งาน",faceAdd:"เพิ่ม/เปลี่ยนรูปใบหน้า",withdraw:"ถอนความยินยอม (ลบใบหน้า)",delEmp:"ลบพนักงาน",viewSig:"ดูลายเซ็น",signNow:"ลงนามยินยอม",
+ cfWithdraw:"ลบภาพและแม่แบบใบหน้าของพนักงานนี้? จะสแกนไม่ได้จนกว่าจะลงนามและเพิ่มรูปใหม่",cfDel:"ลบพนักงานและข้อมูลส่วนบุคคลทั้งหมด? บันทึกเวลาเดิมยังอยู่",
+ editRec:"แก้ไขบันทึกเวลา",emp:"พนักงาน",wd:"วันทำงาน",delRec:"ลบรายการ",err:"เกิดข้อผิดพลาด",forbidden:"ไม่มีสิทธิ์",no_consent:"พนักงานยังไม่ได้ยินยอม",busy:"ระบบไม่ว่าง ลองอีกครั้ง",signedAt:"ลงนามเมื่อ",gpsWait:"กำลังหาพิกัด GPS…",camGas:"เปิดผ่าน Apps Script: Google ไม่อนุญาตกล้อง live — ใช้ปุ่ม ถ่ายรูปสแกน หรือเปิดจาก GitHub Pages",camDenied:"เบราว์เซอร์ถูกปิดสิทธิ์กล้อง — แตะไอคอนแม่กุญแจข้างที่อยู่เว็บ › กล้อง › อนุญาต แล้วรีเฟรช",camBusy:"กล้องถูกใช้งานโดยโปรแกรมอื่น (เช่น Teams) — ปิดโปรแกรมนั้นแล้วลองใหม่",camNone:"ไม่พบกล้องในเครื่องนี้",gpsOff:"ไม่ได้เปิด GPS (บันทึกเฉพาะ Location)"},
+en:{appTitle:"Face Clocking System",barTitle:"Face Clocking",pinPh:"PIN",remember:"Remember on this device (for a leader's kiosk)",signIn:"Sign in",tryDemo:"Try demo mode (sample data)",
+ badPin:"Wrong PIN",notConfigured:"AdminPIN isn't set in the SETTINGS sheet",noApi:"API_URL isn't set in the file. Demo mode still works.",netErr:"Can't reach the server. Check the connection.",
+ editOn:"Edit Mode is on",demoBar:"DEMO mode · sample data stays on this device only",
+ nClock:"Clock",nReg:"Register",nPeople:"People",nReport:"Report",nPay:"Payroll",nSet:"Settings",
+ rAdmin:"Admin",rLeader:"Leader",rViewer:"Viewer",
+ pickLoc:"Select location",pickShift:"Select shift",pickMode:"Type",mAuto:"Auto",mIn:"In",mOut:"Out",
+ camStart:"Start camera",camStop:"Stop camera",takeScan:"Photo scan",camNo:"Live camera isn't available here. Use Photo scan instead.",
+ camIdle:"Pick a location and shift, then start the camera",lookCam:"Look at the camera, face inside the frame",unknown:"Face not recognised",already:"Already clocked a moment ago",
+ mLoad:"Loading models…",mReady:"Ready",mFail:"Models failed to load",needPick:"Pick a location and shift first",noLoc:"No locations yet. An admin can add them in Settings.",
+ feed:"This work day",noScan:"No scans yet",noFace:"No face found. Retake facing the camera in good light.",noMatch:"No employee matches this face",noFaces:"No employees have face data yet",
+ cIn:"Clocked in",cOut:"Clocked out",cDup:"Already clocked",undo:"Undo",undone:"Undone",match:"Match",late:"Late",min:"min",
+ regNew:"New employee",regExist:"Imported employee",s1:"1 · Employee details",s2:"2 · PDPA consent",s3:"3 · Face",pickEmp:"Choose employee (not yet consented)",
+ empId:"Employee ID",nick:"Nickname",first:"First name",last:"Last name",dob:"Date of birth",phone:"Phone",defLoc:"Default location",defShift:"Default shift",
+ next:"Next",back:"Back",save:"Save",cancel:"Cancel",clear:"Clear",del:"Delete",confirm:"Confirm",edit:"Edit",close:"Close",
+ ver:"Version",c1:"I have read and understood this notice and consent to the collection, use and disclosure of my personal data for the purposes above.",
+ c2:"I explicitly consent to the collection and use of my biometric data (face photos and face template) to verify my identity when clocking in and out.",
+ sign:"Employee signature",signHint:"Sign with your finger in this box",faceHint:"Take 1–3 photos facing the camera, no mask or sunglasses, good light.",snap:"Capture",photoUp:"Take / choose photo",faceLater:"You can skip this and upload photos later in People.",
+ faceOk:"Face found",dupFace:"This face looks like",needInfo:"Enter ID, first and last name",needConsent:"Tick both boxes and sign",idExists:"This employee ID is already registered",saved:"Saved",regDone:"Employee registered",
+ people:"Employees",searchPh:"Search ID / name",fAll:"All",fNoConsent:"No consent",fNoFace:"No face",bulkFace:"Upload faces in bulk",bulkHint:"Name each file by employee ID, e.g. 10023.jpg",
+ noPeople:"No employees yet. Import from the template in Settings or add one in Register.",
+ kE:"Consent (e-sign)",kP:"Consent (paper)",kN:"No consent",kW:"Withdrawn",fY:"Face",fN:"No face",inactive:"Inactive",
+ bulkRes:"Done {ok} · skipped {skip}",bulkNoEmp:"ID not found",bulkNoConsent:"no consent",bulkNoFace:"no face found",
+ from:"From",to:"To",loc:"Location",shift:"Shift",all:"All",show:"Show",excel:"Excel",addRec:"Add record",
+ date:"Date",name:"Name",in:"In",out:"Out",normal:"Normal (h)",ot:"OT (h)",otEq:"OT ×1",status:"Status",open:"No clock-out",ok:"Complete",noData:"No records in this range",rows:"rows",
+ thisM:"This month",lastM:"Last month",cut:"Cut-off 21–20",days:"Days",lateMin:"Late (min)",openCnt:"Missing out",wage:"Wage/h",pay:"Est. pay",
+ kEmp:"Employees",kNorm:"Normal hours",kOt:"OT hours",kOtEq:"OT equiv ×1",kPay:"Est. total",
+ payNote:"OT equiv ×1 = OT hours × rate, ready to multiply by the hourly wage. Records without a clock-out count no hours; an admin should fix them in Report before closing the period.",
+ setLockA:"Tap the pencil (top right) to turn on Edit Mode",setLockO:"Read only",
+ impTitle:"Import from template",impHint:"Download the template, fill the Locations / Shifts / OT / Employees sheets and upload it. Empty sheets are left alone. Locations, Shifts and OT replace the current set. Employees are added or updated by ID and never deleted. Upload face photos separately in People.",
+ tplDl:"Download template",impUp:"Choose import file",impConfirm:"Confirm import",impDone:"Import complete",impSheets:"Found",
+ locs:"Locations",addLoc:"Add",shifts:"Shifts and OT (Roster)",addShift:"Add shift",code:"Code",nameTh:"Thai name",nameEn:"English name",start:"Start",end:"End",brk:"Break (min)",otP:"OT periods",addOt:"Add OT period",rate:"Rate ×",
+ rules:"Calculation rules",grace:"Late grace (min)",round:"Round OT down to (min)",thr:"Face match threshold",pins:"Sign-in PINs",pinHint:"Leave blank to keep the current PIN. Use 6+ digits.",
+ brand:"Logo and site",siteName:"Site name",logoUrl:"Logo link",logoFile:"Use a logo image file",consentAdm:"Consent text",consentRev:"Have HR or the DPO review before go-live. Change the version whenever you edit it. Blank uses the standard text.",saveSet:"Save settings",
+ editEmp:"Edit employee",active:"Active",faceAdd:"Add / replace face photos",withdraw:"Withdraw consent (delete face)",delEmp:"Delete employee",viewSig:"View signature",signNow:"Sign consent",
+ cfWithdraw:"Delete this employee's face photos and template? They can't scan until they sign again and add photos.",cfDel:"Delete this employee and all personal data? Past time records are kept.",
+ editRec:"Edit time record",emp:"Employee",wd:"Work date",delRec:"Delete record",err:"Something went wrong",forbidden:"Not allowed",no_consent:"Employee hasn't consented yet",busy:"Server busy, try again",signedAt:"Signed",gpsWait:"Getting GPS…",camGas:"Opened from Apps Script, where Google blocks the live camera. Use Photo scan, or open from GitHub Pages.",camDenied:"Camera permission is blocked. Tap the lock icon by the address bar › Camera › Allow, then reload.",camBusy:"Another app (e.g. Teams) is using the camera. Close it and try again.",camNone:"No camera found on this device.",gpsOff:"GPS off (location only)"}
+};
+const LS = { get(k){ try{return localStorage.getItem(k)}catch(e){return null} }, set(k,v){ try{ v==null?localStorage.removeItem(k):localStorage.setItem(k,v) }catch(e){} } };
+let lang = LS.get('fc-lang') || 'th';
+const t = k => (T[lang]&&T[lang][k]) || T.en[k] || k;
+
+/* ---------------- state ---------------- */
+const S = { pin:'', role:'', demo:false, cfg:null, emps:{}, faces:{}, edit:false, draft:null, tab:'clock',
+  loc:null, shift:null, mode:'auto', feed:[], feedWd:'', rp:[], py:[], models:false, modelsP:null };
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+const ymd = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const dayStart = s => { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d).getTime(); };
+const hm = s => { const [h,m]=String(s||'0:0').split(':').map(Number); return (h||0)*60+(m||0); };
+const fmtMin = m => { if(m==null) return '—'; const x=((Math.round(m)%1440)+1440)%1440; return pad(Math.floor(x/60))+':'+pad(x%60)+(m>=1440?' +1':''); };
+const hrs = m => (m/60).toFixed(2);
+const shiftBy = id => S.cfg.shifts.find(s=>s.id===id);
+const locBy = id => S.cfg.locations.find(l=>l.id===id);
+const nm = o => o ? (o[lang]||o.th||o.en||o.id) : '—';
+const empName = id => { const e=S.emps[id]; return e ? `${e.first} ${e.last}${e.nick?' ('+e.nick+')':''}` : id; };
+const rank = r => ({viewer:1,leader:2,admin:3}[r]||0);
+const consented = e => e && e.consentType && e.consentType!=='withdrawn';
+function toast(m){ const el=$('#toast'); el.textContent=m; el.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>el.hidden=true,3000); }
+const errText = e => { const c=String(e||''); return T[lang][c] ? t(c) : (c==='bad_pin'?t('badPin'):c==='not_configured'?t('notConfigured'):c==='id_exists'?t('idExists'):/fetch|network|Failed/i.test(c)?t('netErr'):t('err')+(c?' ('+c+')':'')); };
+
+/* ---------------- API ---------------- */
+function call(action, params){
+  const req = Object.assign({}, params||{}, {action, pin:S.pin});
+  if(S.demo) return Demo.api(req);
+  if(window.google && google.script && google.script.run){
+    return new Promise((res,rej)=>google.script.run.withSuccessHandler(r=>r&&r.ok?res(r.data):rej(r?r.error:'err')).withFailureHandler(e=>rej(String(e&&e.message||e))).api(req));
+  }
+  if(!CONFIG.API_URL) return Promise.reject('no_api');
+  return fetch(CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(req)})
+    .then(r=>r.json()).then(r=>r.ok?r.data:Promise.reject(r.error));
+}
+
+/* ---------------- DEMO backend (local only) ---------------- */
+const Demo = (() => {
+  const KEY='fc-demo';
+  const seed = () => ({
+    cfg:{ locations:[{id:'L01',th:'ไลน์ประกอบ 1 (ตัวอย่าง)',en:'Assembly 1 (sample)'},{id:'L02',th:'ไลน์ตรวจสอบ (ตัวอย่าง)',en:'Inspection (sample)'}],
+      shifts:[{id:'DAY',th:'กะเช้า',en:'Day shift',start:'08:00',end:'17:30',breakMin:90,ot:[{from:'17:30',to:'20:00',rate:1.5},{from:'20:00',to:'22:00',rate:1.5},{from:'22:00',to:'24:00',rate:1.5}]},
+              {id:'NIGHT',th:'กะดึก',en:'Night shift',start:'20:00',end:'05:30',breakMin:90,ot:[{from:'05:30',to:'08:00',rate:1.5}]}],
+      graceMin:0, otRoundMin:30, threshold:0.5, consent:{version:'1.0',th:'',en:''}, logoUrl:'', siteName:'Green Site (DEMO)' },
+    emps:[{id:'D001',first:'ตัวอย่าง',last:'หนึ่ง',nick:'เอ',loc:'L01',shift:'DAY',active:true,consentType:'paper',hasFace:false,wage:62.5},
+          {id:'D002',first:'ตัวอย่าง',last:'สอง',nick:'บี',loc:'L02',shift:'NIGHT',active:true,consentType:'',hasFace:false,wage:62.5}],
+    faces:{}, sigs:{}, att:[] });
+  let db; try{ db=JSON.parse(LS.get(KEY)||'null'); }catch(e){} if(!db) db=seed();
+  const save=()=>LS.set(KEY,JSON.stringify(db));
+  if(!db.att.length){ // a few sample days so reports aren't empty
+    const now=new Date(); for(let i=1;i<=6;i++){ const d=new Date(now); d.setDate(d.getDate()-i); const wd=ymd(d); const b=dayStart(wd);
+      db.att.push({key:wd+'|D001',wd,id:'D001',shift:'DAY',loc:'L01',in:b+(475+i)*6e4,out:b+(1210+i*5)*6e4});
+      db.att.push({key:wd+'|D002',wd,id:'D002',shift:'NIGHT',loc:'L02',in:b+(1195)*6e4,out:b+(1775+i*10)*6e4}); } save(); }
+  const findAtt=k=>db.att.find(a=>a.key===k);
+  const wdFor=(sh,now)=>{ const s=hm(sh.start),e=hm(sh.end),n=now.getHours()*60+now.getMinutes(); const d=new Date(now); if(e<=s&&n<720) d.setDate(d.getDate()-1); return ymd(d); };
+  const A = {
+    login:()=>({role:'admin'}),
+    boot:()=>({cfg:db.cfg, emps:db.emps, faces:db.faces}),
+    day:q=>db.att.filter(a=>a.wd===q.wd),
+    att:q=>db.att.filter(a=>a.wd>=q.from&&a.wd<=q.to&&a.in),
+    clock:q=>{ const now=new Date(),ts=now.getTime(); const sh=db.cfg.shifts.find(s=>s.id===q.shift); let wd=wdFor(sh,now); let cur=findAtt(wd+'|'+q.empId);
+      if(q.mode!=='in'&&(!cur||!cur.in)){ const y=new Date(ts-864e5),yd=ymd(y); const yc=findAtt(yd+'|'+q.empId); if(yc&&yc.in&&!yc.out&&ts-yc.in<16*3600e3){wd=yd;cur=yc;} }
+      let action=q.mode==='in'?'in':q.mode==='out'?'out':(!cur||!cur.in)?'in':'out';
+      if(q.mode==='auto'&&cur&&((cur.in&&!cur.out&&action==='out'&&ts-cur.in<120e3)||(cur.out&&ts-cur.out<120e3))) return {action:'dup',rec:cur,wd};
+      const prev=cur?JSON.parse(JSON.stringify(cur)):null;
+      if(!cur){ cur={key:wd+'|'+q.empId,wd,id:q.empId,shift:sh.id,loc:q.loc}; db.att.push(cur); }
+      if(action==='in'){ cur.in=ts; cur.inScore=q.score; cur.shift=sh.id; cur.loc=q.loc; cur.inGps=q.gps; } else { cur.out=ts; cur.outScore=q.score; cur.outLoc=q.loc; cur.outGps=q.gps; }
+      save(); return {action,wd,prev,rec:cur}; },
+    undo:q=>{ const i=db.att.findIndex(a=>a.key===q.key); if(i>=0){ if(q.prev) db.att[i]=Object.assign({key:q.key},q.prev); else db.att.splice(i,1);} save(); return true; },
+    register:q=>{ const e=q.emp; const ex=db.emps.find(x=>x.id===e.id); if(ex&&ex.consentType==='e-sign'&&!q.overwrite) throw 'id_exists';
+      const o=Object.assign(ex||{}, {id:e.id,first:e.first,last:e.last,nick:e.nick,dob:e.dob,phone:e.phone,loc:e.loc,shift:e.shift,active:true,consentType:'e-sign',consentVersion:q.consent.version,consentAt:new Date().toISOString().slice(0,19).replace('T',' '),consentLang:q.consent.lang,hasFace:!!(q.faces&&q.faces.descs.length)});
+      if(!ex) db.emps.push(o); db.sigs[e.id]={sig:q.consent.sig,at:o.consentAt,version:q.consent.version,lang:q.consent.lang}; if(o.hasFace) db.faces[e.id]=q.faces; save(); return o; },
+    consent:q=>{ const e=db.emps.find(x=>x.id===q.empId); Object.assign(e,{consentType:'e-sign',consentVersion:q.version,consentAt:new Date().toISOString().slice(0,19).replace('T',' '),consentLang:q.lang}); db.sigs[q.empId]={sig:q.sig,at:e.consentAt,version:q.version,lang:q.lang}; save(); return e; },
+    setFace:q=>{ const e=db.emps.find(x=>x.id===q.empId); if(!e) throw 'no_employee'; if(!consented(e)) throw 'no_consent'; db.faces[q.empId]={descs:q.descs,photo:q.photo}; e.hasFace=true; save(); return true; },
+    getSig:q=>db.sigs[q.empId]||null,
+    updateEmp:q=>{ const e=db.emps.find(x=>x.id===q.emp.id); Object.assign(e,q.emp); save(); return e; },
+    withdraw:q=>{ delete db.faces[q.empId]; const e=db.emps.find(x=>x.id===q.empId); e.hasFace=false; e.consentType='withdrawn'; save(); return true; },
+    deleteEmp:q=>{ db.emps=db.emps.filter(x=>x.id!==q.empId); delete db.faces[q.empId]; delete db.sigs[q.empId]; save(); return true; },
+    saveRec:q=>{ const r=q.rec; const k=r.wd+'|'+r.id; if(q.oldKey&&q.oldKey!==k) db.att=db.att.filter(a=>a.key!==q.oldKey); const ex=findAtt(k); const o=Object.assign(ex||{key:k},r,{key:k,edited:true}); if(!ex) db.att.push(o); save(); return true; },
+    deleteRec:q=>{ db.att=db.att.filter(a=>a.key!==q.key); save(); return true; },
+    saveConfig:q=>{ if(q.locations) db.cfg.locations=q.locations; if(q.shifts) db.cfg.shifts=q.shifts; const s=q.settings||{};
+      ['graceMin','otRoundMin','threshold','logoUrl','siteName'].forEach(k=>{ if(s[k]!=null) db.cfg[k]=s[k]; });
+      if(s.consentVersion!=null) db.cfg.consent={version:s.consentVersion,th:s.consentTH,en:s.consentEN}; save(); return db.cfg; },
+    import:q=>{ const res={locations:0,shifts:0,ot:0,employees:0,skipped:[]};
+      if(q.locations&&q.locations.length){ db.cfg.locations=q.locations.map(l=>({id:l.Code,th:l.NameTH,en:l.NameEN})); res.locations=q.locations.length; }
+      if(q.shifts&&q.shifts.length){ db.cfg.shifts=q.shifts.map(s=>({id:s.Code,th:s.NameTH,en:s.NameEN,start:s.Start,end:s.End,breakMin:+s.BreakMin||0,ot:[]})); res.shifts=q.shifts.length; }
+      if(q.ot&&q.ot.length){ db.cfg.shifts.forEach(s=>s.ot=q.ot.filter(o=>o.Shift===s.id).map(o=>({from:o.From,to:o.To,rate:+o.Rate||1}))); res.ot=q.ot.length; }
+      (q.employees||[]).forEach(e=>{ if(!e.EmpID||!e.FirstName){ res.skipped.push(e.EmpID||'(blank)'); return; } let x=db.emps.find(z=>z.id===String(e.EmpID)); if(!x){ x={id:String(e.EmpID),hasFace:false,consentType:''}; db.emps.push(x); }
+        Object.assign(x,{first:e.FirstName,last:e.LastName||'',nick:e.Nickname||'',dob:e.DOB||'',phone:e.Phone||'',loc:e.Location||'',shift:e.Shift||'',active:!/^(n|no|false|0)$/i.test(String(e.Active||'')),wage:e.WagePerHour===''||e.WagePerHour==null?x.wage:+e.WagePerHour});
+        if(e.PaperConsentDate&&!x.consentType){ x.consentType='paper'; x.consentAt=e.PaperConsentDate; } res.employees++; });
+      save(); return res; }
+  };
+  return { api:req=>new Promise((res,rej)=>setTimeout(()=>{ try{ res(A[req.action](req)); }catch(e){ rej(e); } },120)), reset:()=>{ db=seed(); save(); } };
+})();
+
+/* ---------------- login ---------------- */
+$('#keypad').innerHTML = ['1','2','3','4','5','6','7','8','9','C','0','⌫'].map(k=>`<button type="button" data-k="${k}">${k}</button>`).join('');
+$('#keypad').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; const p=$('#pinIn'); const k=b.dataset.k;
+  if(k==='C') p.value=''; else if(k==='⌫') p.value=p.value.slice(0,-1); else if(p.value.length<12) p.value+=k; });
+$('#pinIn').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+$('#loginBtn').addEventListener('click', ()=>doLogin());
+$('#demoBtn').addEventListener('click', ()=>{ S.demo=true; S.pin='demo'; S.role='admin'; enterApp(); });
+async function doLogin(pin){
+  pin = pin ?? $('#pinIn').value.trim(); if(!pin) return;
+  $('#loginMsg').textContent=''; $('#loginBtn').disabled=true;
+  S.pin=pin; S.demo=false;
+  try{ const r=await call('login'); S.role=r.role; LS.set('fc-pin', $('#rememberPin').checked ? pin : null); enterApp(); }
+  catch(e){ $('#loginMsg').textContent = e==='no_api' ? t('noApi') : errText(e); LS.set('fc-pin',null); }
+  $('#loginBtn').disabled=false;
+}
+$('#logoutBtn').addEventListener('click', ()=>{ stopCam(); LS.set('fc-pin',null); location.reload(); });
+
+/* ---------------- shell ---------------- */
+const ICON = {
+  clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  reg:'<circle cx="10" cy="8" r="3.5"/><path d="M3.5 19c.8-3.2 3.3-5 6.5-5s5.7 1.8 6.5 5M18 8v6M15 11h6"/>',
+  people:'<circle cx="9" cy="8" r="3"/><path d="M3.5 18c.6-2.7 2.7-4.3 5.5-4.3s4.9 1.6 5.5 4.3"/><circle cx="17" cy="9" r="2.4"/><path d="M15.8 13.7c2.3 0 4.1 1.4 4.7 3.8"/>',
+  report:'<rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+  pay:'<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9.5v5M17.5 9.5v5"/>',
+  set:'<circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/>'
+};
+const TABS = [
+  {id:'clock',k:'nClock',ic:'clock',min:'leader'},{id:'register',k:'nReg',ic:'reg',min:'leader'},{id:'people',k:'nPeople',ic:'people',min:'viewer'},
+  {id:'report',k:'nReport',ic:'report',min:'viewer'},{id:'pay',k:'nPay',ic:'pay',min:'viewer'},{id:'set',k:'nSet',ic:'set',min:'viewer'}];
+function renderNav(){
+  const vis=TABS.filter(x=>rank(S.role)>=rank(x.min));
+  if(!vis.find(x=>x.id===S.tab)) S.tab=vis[0].id;
+  $('#nav').innerHTML = vis.map(x=>`<button data-tab="${x.id}" class="${x.id===S.tab?'on':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICON[x.ic]}</svg><span>${esc(t(x.k))}</span></button>`).join('');
+  TABS.forEach(x=>$('#v-'+x.id).hidden = x.id!==S.tab);
+}
+$('#nav').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; go(b.dataset.tab); });
+function go(tab){
+  if(S.tab==='clock' && tab!=='clock') stopCam();
+  if(S.tab==='register' && tab!=='register') stopRegCam();
+  S.tab=tab; renderNav(); window.scrollTo(0,0);
+  if(tab==='clock'){ ensureModels().catch(()=>{}); renderClock(); loadFeed(); refreshGPS(); renderGeo(); }
+  if(tab==='register'){ ensureModels().catch(()=>{}); renderRegister(); requestAnimationFrame(initSig); }
+  if(tab==='people') renderPeople();
+  if(tab==='report' && !S.rp.length) loadReport();
+  if(tab==='pay' && !S.py.length) loadPay();
+  if(tab==='set') renderSettings();
+}
+function applyLang(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll('[data-t]').forEach(el=>el.textContent=t(el.dataset.t));
+  document.querySelectorAll('[data-tp]').forEach(el=>el.placeholder=t(el.dataset.tp));
+  document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on', b.dataset.lang===lang));
+  if(S.cfg){ renderNav(); renderAll(); }
+}
+document.querySelectorAll('.lang').forEach(g=>g.addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; lang=b.dataset.lang; LS.set('fc-lang',lang); applyLang(); }));
+$('#editBtn').addEventListener('click', ()=>{ S.edit=!S.edit; S.draft = S.edit ? JSON.parse(JSON.stringify(S.cfg)) : null; $('#editBar').hidden=!S.edit; $('#editBtn').style.background=S.edit?'rgba(255,255,255,.2)':''; renderAll(); });
+
+async function enterApp(){
+  $('#login').hidden=true; $('#app').hidden=false; $('#demoBar').hidden=!S.demo;
+  $('#roleChip').textContent=t({admin:'rAdmin',leader:'rLeader',viewer:'rViewer'}[S.role]);
+  $('#editBtn').hidden = S.role!=='admin';
+  try{ await boot(); }catch(e){ toast(errText(e)); }
+  S.tab = rank(S.role)>=2 ? 'clock' : 'report';
+  applyLang(); go(S.tab);
+}
+async function boot(){
+  const d=await call('boot');
+  S.cfg=d.cfg; S.cfg.consent=S.cfg.consent||{}; S.emps={}; (d.emps||[]).forEach(e=>S.emps[e.id]=e); S.faces=d.faces||{};
+  renderBrand();
+}
+function renderBrand(){
+  const u=S.cfg&&S.cfg.logoUrl;
+  [$('#logo'),$('#loginLogo')].forEach(l=>{ if(u) l.innerHTML=`<img src="${esc(u)}" alt="ZF">`; else l.textContent='ZF'; });
+  $('#siteName').textContent = (S.cfg&&S.cfg.siteName)||'';
+}
+function renderAll(){
+  fillSelects(); renderClock(); renderFeed(); renderRegister(); renderPeople(); renderSettings();
+  if(S.rp.length) renderReport(); if(S.py.length) renderPay();
+}
+
+/* ---------------- face engine ---------------- */
+function setModel(st){ const b=$('#modelBadge'); b.className='badge '+({load:'w',ok:'g',fail:'b'}[st]||''); b.textContent=t({load:'mLoad',ok:'mReady',fail:'mFail'}[st]); }
+function ensureModels(){
+  if(S.models) return Promise.resolve(); if(S.modelsP) return S.modelsP;
+  if(typeof faceapi==='undefined'){ setModel('fail'); return Promise.reject('models'); }
+  setModel('load');
+  S.modelsP = Promise.all([faceapi.nets.tinyFaceDetector.loadFromUri(CONFIG.MODEL_URL), faceapi.nets.faceLandmark68TinyNet.loadFromUri(CONFIG.MODEL_URL), faceapi.nets.faceRecognitionNet.loadFromUri(CONFIG.MODEL_URL)])
+    .then(()=>{ S.models=true; setModel('ok'); renderClock(); }).catch(e=>{ console.error(e); setModel('fail'); S.modelsP=null; throw e; });
+  return S.modelsP;
+}
+const detOpts = () => new faceapi.TinyFaceDetectorOptions({inputSize:320, scoreThreshold:0.5});
+async function detect(src){ await ensureModels(); return faceapi.detectSingleFace(src, detOpts()).withFaceLandmarks(true).withFaceDescriptor(); }
+async function fileCanvas(file,max=720){ const u=URL.createObjectURL(file); try{ const im=new Image(); im.src=u; await im.decode(); const k=Math.min(1,max/Math.max(im.naturalWidth,im.naturalHeight)); const c=document.createElement('canvas'); c.width=Math.round(im.naturalWidth*k); c.height=Math.round(im.naturalHeight*k); c.getContext('2d').drawImage(im,0,0,c.width,c.height); return c; } finally{ URL.revokeObjectURL(u); } }
+function videoCanvas(v){ const c=document.createElement('canvas'); c.width=v.videoWidth; c.height=v.videoHeight; c.getContext('2d').drawImage(v,0,0); return c; }
+function thumb(src, box, size=112){ const p=box.width*.35, x=Math.max(0,box.x-p), y=Math.max(0,box.y-p*1.2); const w=Math.min(src.width-x,box.width+p*2), h=Math.min(src.height-y,box.height+p*2.2); const s=Math.min(w,h); const c=document.createElement('canvas'); c.width=c.height=size; c.getContext('2d').drawImage(src,x+(w-s)/2,y+(h-s)/2,s,s,0,0,size,size); return c.toDataURL('image/jpeg',.72); }
+const dist=(a,b)=>{ let s=0; for(let i=0;i<a.length;i++){ const d=a[i]-b[i]; s+=d*d; } return Math.sqrt(s); };
+const round5 = d => Array.from(d).map(v=>+v.toFixed(5));
+function bestMatch(desc, skip){ let best=null; for(const id in S.faces){ if(id===skip) continue; const e=S.emps[id]; if(!e||e.active===false||!consented(e)) continue; for(const d of (S.faces[id].descs||[])){ const v=dist(desc,d); if(!best||v<best.dist) best={id,dist:v}; } } return best; }
+
+/* ---------------- time calc ---------------- */
+function windows(sh){ const s=hm(sh.start); const adj=m=>m<s?m+1440:m; let e=adj(hm(sh.end)); if(e<=s) e+=1440;
+  const ot=(sh.ot||[]).map(o=>{ const f=adj(hm(o.from)); let to=adj(hm(o.to)); if(to<=f) to+=1440; return {f,to,rate:+o.rate||1}; }); return {s,e,ot,brk:+sh.breakMin||0}; }
+const ov=(a,b,c,d)=>Math.max(0,Math.min(b,d)-Math.max(a,c));
+function calc(r){ const sh=shiftBy(r.shift); if(!sh||!r.in) return null; const base=dayStart(r.wd), w=windows(sh);
+  const i=(r.in-base)/6e4, o=r.out?(r.out-base)/6e4:null;
+  const c={in:i,out:o,late:Math.max(0,Math.round(i-w.s-(+S.cfg.graceMin||0))),normal:0,ot:[],otMin:0,otEq:0,open:o==null};
+  if(o==null) return c; let n=ov(i,o,w.s,w.e); if(n>=300) n=Math.max(0,n-w.brk); c.normal=Math.round(n);
+  const rd=+S.cfg.otRoundMin||0; w.ot.forEach(x=>{ let m=ov(i,o,x.f,x.to); if(rd>0) m=Math.floor(m/rd)*rd; m=Math.round(m); c.ot.push({m,rate:x.rate}); c.otMin+=m; c.otEq+=m*x.rate; }); return c; }
+function workDateFor(sh,now){ const s=hm(sh.start),e=hm(sh.end),n=now.getHours()*60+now.getMinutes(); const d=new Date(now); if(e<=s&&n<720) d.setDate(d.getDate()-1); return ymd(d); }
+
+/* ---------------- CLOCK ---------------- */
+setInterval(()=>{ const n=new Date(); $('#bigTime').textContent=pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds()); $('#bigDate').textContent=n.toLocaleDateString(lang==='th'?'th-TH':'en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); },1000);
+const camState = { stream:null, on:false, last:{id:null,n:0}, recent:{}, busy:false, timer:null };
+const hasCam = () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+function renderClock(){
+  if(!S.cfg) return;
+  const locs=S.cfg.locations.filter(l=>l.active!==false);
+  if(S.loc && !locBy(S.loc)) S.loc=null;
+  if(!S.loc){ const saved=LS.get('fc-loc'); if(saved&&locBy(saved)) S.loc=saved; else if(locs.length===1) S.loc=locs[0].id; }
+  $('#locChips').innerHTML = locs.length ? locs.map(l=>`<button data-id="${esc(l.id)}" class="${l.id===S.loc?'on':''}"><span>${esc(nm(l))}</span><small>${esc(l.id)}</small></button>`).join('') : `<div class="empty" style="flex:1">${esc(t('noLoc'))}</div>`;
+  if(S.shift && !shiftBy(S.shift)) S.shift=null;
+  if(!S.shift){ const h=new Date().getHours(); const a=S.cfg.shifts.find(s=>{ const st=hm(s.start)/60; return h>=st-2 && h<st+10; })||S.cfg.shifts[0]; S.shift=a&&a.id; }
+  $('#shiftChips').innerHTML = S.cfg.shifts.map(s=>`<button data-id="${esc(s.id)}" class="${s.id===S.shift?'on':''}" ${S.loc?'':'disabled'}><span>${esc(nm(s))}</span><small>${esc(s.start)}–${esc(s.end)}</small></button>`).join('');
+  $('#lblLoc').classList.toggle('done',!!S.loc); $('#lblShift').classList.toggle('done',!!(S.loc&&S.shift));
+  document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.m===S.mode));
+  const ready = S.loc && S.shift && S.models;
+  $('#camBtn').innerHTML = camState.on ? `<span>${esc(t('camStop'))}</span>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><circle cx="12" cy="11" r="3"/></svg><span>${esc(t('camStart'))}</span>`;
+  $('#camBtn').disabled = !ready || !hasCam();
+  $('#photoBtn').style.opacity = ready ? 1 : .45; $('#photoBtn').style.pointerEvents = ready ? '' : 'none';
+  $('#camOff').hidden = camState.on;
+  $('#camOff').textContent = !(S.loc&&S.shift) ? t('needPick') : !hasCam() ? t('camNo') : t('camIdle');
+}
+$('#locChips').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; S.loc=b.dataset.id; LS.set('fc-loc',S.loc); renderClock(); });
+$('#shiftChips').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b||b.disabled) return; S.shift=b.dataset.id; renderClock(); loadFeed(); });
+$('#modeSeg').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; S.mode=b.dataset.m; renderClock(); });
+$('#camBtn').addEventListener('click', ()=> camState.on ? stopCam() : startCam());
+async function startCam(){
+  try{
+    camState.stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false});
+    const v=$('#video'); v.srcObject=camState.stream; await v.play(); camState.on=true; renderClock(); $('#camHint').textContent=t('lookCam'); loop();
+  }catch(e){ console.warn(e); camState.on=false; $('#camOff').hidden=false; $('#camOff').textContent=camErr(e); $('#camBtn').disabled=true; }
+}
+function camErr(e){
+  const gas = !!(window.google && google.script);
+  if(gas) return t('camGas');
+  if(e && e.name==='NotAllowedError') return t('camDenied');
+  if(e && (e.name==='NotReadableError'||e.name==='TrackStartError')) return t('camBusy');
+  if(e && e.name==='NotFoundError') return t('camNone');
+  return t('camNo');
+}
+function stopCam(){ clearTimeout(camState.timer); if(camState.stream) camState.stream.getTracks().forEach(tr=>tr.stop()); camState.stream=null; camState.on=false; $('#cam').classList.remove('hit'); if(S.cfg) renderClock(); }
+async function loop(){
+  if(!camState.on) return;
+  if(!camState.busy && S.tab==='clock' && !document.hidden){
+    camState.busy=true;
+    try{
+      const v=$('#video'); const d=await detect(v);
+      if(!d){ camState.last={id:null,n:0}; $('#cam').classList.remove('hit'); $('#camHint').textContent=t('lookCam'); }
+      else{
+        const m=bestMatch(d.descriptor); const thr=+S.cfg.threshold||0.5;
+        if(!m || m.dist>thr){ camState.last={id:null,n:0}; $('#cam').classList.remove('hit'); $('#camHint').textContent=Object.keys(S.faces).length?t('unknown'):t('noFaces'); }
+        else{
+          $('#cam').classList.add('hit');
+          camState.last = camState.last.id===m.id ? {id:m.id,n:camState.last.n+1} : {id:m.id,n:1};
+          $('#camHint').textContent = empName(m.id);
+          if(camState.last.n>=2){
+            if(Date.now()-(camState.recent[m.id]||0) < 60e3){ $('#camHint').textContent=empName(m.id)+' · '+t('already'); }
+            else{ camState.recent[m.id]=Date.now(); camState.last={id:null,n:0}; await doClock(m.id,m.dist); }
+          }
+        }
+      }
+    }catch(e){ console.error(e); }
+    camState.busy=false;
+  }
+  camState.timer=setTimeout(loop, 450);
+}
+$('#scanFile').addEventListener('change', async e=>{
+  const f=e.target.files[0]; e.target.value=''; if(!f) return;
+  $('#scanResult').innerHTML=`<div class="small muted">${esc(t('mLoad'))}</div>`;
+  try{ const c=await fileCanvas(f); const d=await detect(c);
+    if(!d){ $('#scanResult').innerHTML=card('fail',null,t('noFace')); return; }
+    if(!Object.keys(S.faces).length){ $('#scanResult').innerHTML=card('fail',null,t('noFaces')); return; }
+    const m=bestMatch(d.descriptor); if(!m||m.dist>(+S.cfg.threshold||.5)){ $('#scanResult').innerHTML=card('fail',thumb(c,d.detection.box),t('noMatch')); return; }
+    await doClock(m.id,m.dist);
+  }catch(err){ console.error(err); $('#scanResult').innerHTML=card('fail',null,errText(err)); }
+});
+function card(kind,photo,title,sub=''){ return `<div class="result ${kind}">${photo?`<img class="ph" src="${photo}" alt="">`:'<span class="ph"></span>'}<div style="min-width:0"><div class="act">${esc(title)}</div>${sub}</div></div>`; }
+function beep(ok){ try{ const a=new (window.AudioContext||window.webkitAudioContext)(); const o=a.createOscillator(), g=a.createGain(); o.frequency.value=ok?880:300; g.gain.value=.08; o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+.18); }catch(e){} }
+const GEO={v:'',at:0,denied:false};
+function refreshGPS(){ if(GEO.denied||!navigator.geolocation) return; if(Date.now()-GEO.at<120e3) return;
+  navigator.geolocation.getCurrentPosition(p=>{ GEO.v=p.coords.latitude.toFixed(6)+','+p.coords.longitude.toFixed(6)+(p.coords.accuracy?' ±'+Math.round(p.coords.accuracy)+'m':''); GEO.at=Date.now(); renderGeo(); },
+    e=>{ if(e.code===1) GEO.denied=true; renderGeo(); },{enableHighAccuracy:true,timeout:8000,maximumAge:120000}); }
+function renderGeo(){ const b=$('#geoBadge'); if(!b) return; b.className='badge '+(GEO.v?'g':GEO.denied?'w':''); b.textContent=GEO.v?('GPS '+GEO.v):(GEO.denied?t('gpsOff'):t('gpsWait')); }
+async function doClock(id, d){
+  const score=+(1-d).toFixed(3); refreshGPS();
+  try{
+    const r=await call('clock',{empId:id,shift:S.shift,loc:S.loc,mode:S.mode,score,gps:GEO.v});
+    const ph=S.faces[id]&&S.faces[id].photo;
+    if(r.action==='dup'){ $('#scanResult').innerHTML=card('dup',ph,t('cDup'),`<div>${esc(empName(id))}</div>`); beep(false); return; }
+    const c=r.rec&&r.rec.in?calc(r.rec):null; const ts=new Date(r.action==='in'?r.rec.in:r.rec.out);
+    const late = r.action==='in'&&c&&c.late>0 ? ` <span class="badge w">${esc(t('late'))} ${c.late} ${esc(t('min'))}</span>` : '';
+    const sub=`<div style="font-weight:600">${esc(empName(id))}</div><div class="small muted"><span class="mono">${esc(id)}</span> · ${esc(nm(locBy(r.action==='out'?(r.rec.outLoc||r.rec.loc):r.rec.loc)))} · ${esc(nm(shiftBy(r.rec.shift)))}</div><div class="small"><span class="mono">${pad(ts.getHours())}:${pad(ts.getMinutes())}</span> · ${esc(t('match'))} ${Math.round(score*100)}%${late}</div><button class="btn" id="undoBtn" style="margin-top:8px;min-height:36px;padding:4px 12px">${esc(t('undo'))}</button>`;
+    $('#scanResult').innerHTML=card(r.action,ph,t(r.action==='in'?'cIn':'cOut'),sub); beep(true);
+    $('#undoBtn').onclick=async()=>{ try{ await call('undo',{key:r.rec.key||(r.wd+'|'+id),prev:r.prev}); $('#scanResult').innerHTML=''; delete camState.recent[id]; toast(t('undone')); loadFeed(); }catch(e){ toast(errText(e)); } };
+    loadFeed();
+  }catch(e){ $('#scanResult').innerHTML=card('fail',null,errText(e)); beep(false); }
+}
+async function loadFeed(){
+  if(!S.shift||rank(S.role)<2) return; const wd=workDateFor(shiftBy(S.shift),new Date()); S.feedWd=wd;
+  try{ S.feed=await call('day',{wd}); renderFeed(); }catch(e){}
+}
+function renderFeed(){
+  $('#feedDate').textContent=S.feedWd;
+  const it=[]; S.feed.forEach(r=>{ if(r.in) it.push({r,ty:'in',ts:r.in}); if(r.out) it.push({r,ty:'out',ts:r.out}); }); it.sort((a,b)=>b.ts-a.ts);
+  $('#feed').innerHTML = it.length ? it.slice(0,80).map(x=>{ const ph=S.faces[x.r.id]&&S.faces[x.r.id].photo; const d=new Date(x.ts);
+    return `<div class="it">${ph?`<img class="thumb" src="${ph}" alt="">`:'<span class="thumb"></span>'}<div style="min-width:0"><div style="font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(empName(x.r.id))}</div><div class="small muted">${esc(nm(locBy(x.ty==='out'?(x.r.outLoc||x.r.loc):x.r.loc)))}</div></div><div style="text-align:right"><span class="badge ${x.ty==='in'?'g':'i'}">${esc(t(x.ty==='in'?'mIn':'mOut'))}</span><div class="mono small">${pad(d.getHours())}:${pad(d.getMinutes())}</div></div></div>`; }).join('') : `<div class="empty">${esc(t('noScan'))}</div>`;
+}
+setInterval(()=>{ if(S.tab==='clock' && !document.hidden) loadFeed(); }, 60e3);
+
+/* ---------------- REGISTER ---------------- */
+const R = { kind:'new', step:1, shots:[], sig:{c:null,x:null,drawn:false,down:false}, stream:null };
+function fillSelects(){
+  if(!S.cfg) return;
+  const lo=S.cfg.locations.map(l=>`<option value="${esc(l.id)}">${esc(nm(l))}</option>`).join(''), so=S.cfg.shifts.map(s=>`<option value="${esc(s.id)}">${esc(nm(s))}</option>`).join('');
+  [['#r-loc',lo,0],['#r-shift',so,0],['#rpl',lo,1],['#rps',so,1],['#pyl',lo,1]].forEach(([q,o,all])=>{ const el=$(q),v=el.value; el.innerHTML=(all?`<option value="">${esc(t('all'))}</option>`:'')+o; if([...el.options].some(x=>x.value===v)) el.value=v; });
+  const pend=Object.values(S.emps).filter(e=>!consented(e)||e.consentType==='paper').sort((a,b)=>a.id.localeCompare(b.id));
+  const ex=$('#r-exist'), ev=ex.value; ex.innerHTML=`<option value=""></option>`+pend.map(e=>`<option value="${esc(e.id)}">${esc(e.id)} · ${esc(e.first)} ${esc(e.last)}${e.consentType==='paper'?' (paper)':''}</option>`).join(''); ex.value=ev;
+}
+function renderRegister(){
+  document.querySelectorAll('#regKind button').forEach(b=>b.classList.toggle('on',b.dataset.k===R.kind));
+  $('#pickExist').hidden = R.kind!=='exist';
+  ['#r-id','#r-first','#r-last'].forEach(q=>$(q).readOnly = R.kind==='exist');
+  document.querySelectorAll('#regSteps span').forEach((s,i)=>s.classList.toggle('on',i<R.step));
+  ['#rs1','#rs2','#rs3'].forEach((q,i)=>$(q).hidden = R.step!==i+1);
+  if(S.cfg){ $('#consentText').textContent = (S.cfg.consent[lang]||'').trim() || (lang==='th'?CONSENT_TH:CONSENT_EN); $('#consentVer').textContent=S.cfg.consent.version||'1.0'; }
+  $('#shots').innerHTML=R.shots.map(s=>`<img src="${s.photo}" alt="">`).join('');
+  $('#regCam').hidden = !R.stream; $('#regSnap').hidden = !R.stream;
+}
+$('#regKind').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; R.kind=b.dataset.k; resetReg(); renderRegister(); });
+$('#r-exist').addEventListener('change', e=>{ const x=S.emps[e.target.value]; if(!x) return;
+  $('#r-id').value=x.id; $('#r-first').value=x.first; $('#r-last').value=x.last; $('#r-nick').value=x.nick||''; $('#r-dob').value=x.dob||''; $('#r-phone').value=x.phone||''; $('#r-loc').value=x.loc||''; $('#r-shift').value=x.shift||''; });
+$('#rs1Next').addEventListener('click', ()=>{ if(!$('#r-id').value.trim()||!$('#r-first').value.trim()||!$('#r-last').value.trim()){ toast(t('needInfo')); return; }
+  const id=$('#r-id').value.trim(); if(R.kind==='new' && S.emps[id] && S.emps[id].consentType==='e-sign'){ toast(t('idExists')); return; }
+  R.step=2; renderRegister(); requestAnimationFrame(initSig); window.scrollTo(0,0); });
+$('#rs2Back').addEventListener('click', ()=>{ R.step=1; renderRegister(); });
+$('#rs2Next').addEventListener('click', ()=>{ if(!$('#c1').checked||!$('#c2').checked||!R.sig.drawn){ toast(t('needConsent')); return; } R.step=3; renderRegister(); startRegCam(); window.scrollTo(0,0); });
+$('#rs3Back').addEventListener('click', ()=>{ stopRegCam(); R.step=2; renderRegister(); requestAnimationFrame(initSig); });
+function initSig(){ const c=$('#sigCv'), r=c.getBoundingClientRect(); if(!r.width) return; if(R.sig.c===c && c.width===Math.round(r.width*(devicePixelRatio||1))) return;
+  const dpr=devicePixelRatio||1; c.width=Math.round(r.width*dpr); c.height=Math.round(170*dpr); const x=c.getContext('2d'); x.scale(dpr,dpr); x.lineWidth=2.6; x.lineCap='round'; x.lineJoin='round'; x.strokeStyle='#0f1e36'; R.sig={c,x,drawn:false,down:false}; }
+const sp = e => { const r=R.sig.c.getBoundingClientRect(); return [e.clientX-r.left,e.clientY-r.top]; };
+$('#sigCv').addEventListener('pointerdown', e=>{ if(!R.sig.x) initSig(); R.sig.down=true; R.sig.c.setPointerCapture(e.pointerId); const [x,y]=sp(e); R.sig.x.beginPath(); R.sig.x.moveTo(x,y); });
+$('#sigCv').addEventListener('pointermove', e=>{ if(!R.sig.down) return; const [x,y]=sp(e); R.sig.x.lineTo(x,y); R.sig.x.stroke(); R.sig.drawn=true; });
+['pointerup','pointercancel'].forEach(ev=>$('#sigCv').addEventListener(ev,()=>R.sig.down=false));
+$('#sigClr').addEventListener('click', ()=>{ if(R.sig.x){ R.sig.x.clearRect(0,0,R.sig.c.width,R.sig.c.height); } R.sig.drawn=false; });
+function sigData(){ const o=document.createElement('canvas'); o.width=360; o.height=120; const x=o.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,360,120); x.drawImage(R.sig.c,0,0,360,120); return o.toDataURL('image/jpeg',.6); }
+async function startRegCam(){ if(!hasCam()||R.stream) return; try{ R.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640}},audio:false}); const v=$('#regVideo'); v.srcObject=R.stream; await v.play(); }catch(e){ R.stream=null; $('#shotMsg').textContent=camErr(e); } renderRegister(); }
+function stopRegCam(){ if(R.stream) R.stream.getTracks().forEach(tr=>tr.stop()); R.stream=null; renderRegister(); }
+async function addShot(src){
+  $('#shotMsg').textContent=t('mLoad');
+  try{ const d=await detect(src); if(!d){ $('#shotMsg').textContent=t('noFace'); return; }
+    const desc=round5(d.descriptor); const m=bestMatch(desc,$('#r-id').value.trim());
+    R.shots.push({desc,photo:thumb(src,d.detection.box)}); if(R.shots.length>3) R.shots.shift();
+    $('#shotMsg').innerHTML = m&&m.dist<(+S.cfg.threshold||.5) ? `<span style="color:var(--warn)">${esc(t('dupFace'))} ${esc(empName(m.id))}</span>` : `<span style="color:var(--good)">${esc(t('faceOk'))} (${R.shots.length}/3)</span>`;
+    renderRegister();
+  }catch(e){ $('#shotMsg').textContent=errText(e); }
+}
+$('#regSnap').addEventListener('click', ()=>{ const v=$('#regVideo'); if(v.videoWidth) addShot(videoCanvas(v)); });
+$('#regFile').addEventListener('change', async e=>{ const f=e.target.files[0]; e.target.value=''; if(f) addShot(await fileCanvas(f)); });
+$('#regSave').addEventListener('click', async ()=>{
+  const b=$('#regSave'); b.disabled=true;
+  const emp={id:$('#r-id').value.trim(),first:$('#r-first').value.trim(),last:$('#r-last').value.trim(),nick:$('#r-nick').value.trim(),dob:$('#r-dob').value,phone:$('#r-phone').value.trim(),loc:$('#r-loc').value,shift:$('#r-shift').value};
+  const consent={version:S.cfg.consent.version||'1.0',lang,sig:sigData()};
+  const faces=R.shots.length?{descs:R.shots.map(s=>s.desc),photo:R.shots[0].photo}:null;
+  try{ const e=await call('register',{emp,consent,faces,overwrite:R.kind==='exist'}); S.emps[e.id]=Object.assign(S.emps[e.id]||{},e); if(faces) S.faces[e.id]=faces; toast(t('regDone')); stopRegCam(); resetReg(); fillSelects(); renderRegister(); window.scrollTo(0,0); }
+  catch(e){ toast(errText(e)); }
+  b.disabled=false;
+});
+function resetReg(){ R.step=1; R.shots=[]; ['#r-id','#r-first','#r-last','#r-nick','#r-dob','#r-phone'].forEach(q=>$(q).value=''); $('#r-exist').value=''; $('#c1').checked=false; $('#c2').checked=false; if(R.sig.x) R.sig.x.clearRect(0,0,R.sig.c.width,R.sig.c.height); R.sig.drawn=false; $('#shotMsg').textContent=''; }
+
+/* ---------------- PEOPLE ---------------- */
+['#pq','#pf'].forEach(q=>$(q).addEventListener('input',renderPeople));
+function cBadge(e){ return e.consentType==='e-sign'?`<span class="badge g">${esc(t('kE'))}</span>`:e.consentType==='paper'?`<span class="badge i">${esc(t('kP'))}</span>`:e.consentType==='withdrawn'?`<span class="badge b">${esc(t('kW'))}</span>`:`<span class="badge w">${esc(t('kN'))}</span>`; }
+function renderPeople(){
+  if(!S.cfg) return;
+  $('#peopleTools').hidden = rank(S.role)<2;
+  const q=$('#pq').value.trim().toLowerCase(), f=$('#pf').value;
+  const list=Object.values(S.emps).filter(e=>(!q||[e.id,e.first,e.last,e.nick].join(' ').toLowerCase().includes(q)) && (!f || (f==='noconsent'&&!consented(e)) || (f==='noface'&&!e.hasFace))).sort((a,b)=>a.id.localeCompare(b.id));
+  $('#pcount').textContent=Object.keys(S.emps).length;
+  const canEdit = S.role==='admin' && S.edit, canSign = rank(S.role)>=2;
+  $('#plist').innerHTML = list.length ? list.map(e=>{ const ph=S.faces[e.id]&&S.faces[e.id].photo;
+    const act = canEdit ? `<button class="btn warn" data-edit="${esc(e.id)}" style="min-height:38px;padding:4px 12px">${esc(t('edit'))}</button>` : (canSign && !consented(e) ? `<button class="btn" data-sign="${esc(e.id)}" style="min-height:38px;padding:4px 12px">${esc(t('signNow'))}</button>` : '');
+    return `<div class="pitem">${ph?`<img class="thumb" src="${ph}" alt="">`:'<span class="thumb"></span>'}<div style="min-width:0"><div class="nm">${esc(e.first)} ${esc(e.last)}${e.nick?` <span class="muted">(${esc(e.nick)})</span>`:''}</div><div class="small muted"><span class="mono">${esc(e.id)}</span> · ${esc(nm(locBy(e.loc)))} · ${esc(nm(shiftBy(e.shift)))}</div><div class="bd">${cBadge(e)}<span class="badge ${e.hasFace?'g':''}">${esc(t(e.hasFace?'fY':'fN'))}</span>${e.active===false?`<span class="badge b">${esc(t('inactive'))}</span>`:''}</div></div>${act}</div>`; }).join('')
+    : `<div class="empty">${esc(t('noPeople'))}</div>`;
+}
+$('#plist').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.edit) openEmp(b.dataset.edit);
+  if(b.dataset.sign){ R.kind='exist'; resetReg(); go('register'); fillSelects(); $('#r-exist').value=b.dataset.sign; $('#r-exist').dispatchEvent(new Event('change')); renderRegister(); } });
+$('#bulkFile').addEventListener('change', async e=>{
+  const files=[...e.target.files]; e.target.value=''; if(!files.length) return;
+  $('#bulkProg').hidden=false; let ok=0; const skip=[];
+  try{ await ensureModels(); }catch(x){ toast(t('mFail')); return; }
+  const groups={}; files.forEach(f=>{ const id=f.name.replace(/\.[^.]+$/,'').replace(/[_\- ]\d+$/,'').trim(); (groups[id]=groups[id]||[]).push(f); });
+  const ids=Object.keys(groups); let i=0;
+  for(const id of ids){
+    i++; $('#bulkBar').style.width=Math.round(i/ids.length*100)+'%'; $('#bulkTxt').textContent=`${i}/${ids.length} · ${id}`;
+    const emp=S.emps[id]; if(!emp){ skip.push(`${id}: ${t('bulkNoEmp')}`); continue; } if(!consented(emp)){ skip.push(`${id}: ${t('bulkNoConsent')}`); continue; }
+    const shots=[]; for(const f of groups[id].slice(0,3)){ try{ const c=await fileCanvas(f); const d=await detect(c); if(d) shots.push({desc:round5(d.descriptor),photo:thumb(c,d.detection.box)}); }catch(x){} }
+    if(!shots.length){ skip.push(`${id}: ${t('bulkNoFace')}`); continue; }
+    try{ const p={descs:shots.map(s=>s.desc),photo:shots[0].photo}; await call('setFace',Object.assign({empId:id},p)); S.faces[id]=p; emp.hasFace=true; ok++; }catch(x){ skip.push(`${id}: ${errText(x)}`); }
+  }
+  $('#bulkTxt').innerHTML = esc(t('bulkRes').replace('{ok}',ok).replace('{skip}',skip.length)) + (skip.length?'<br>'+skip.map(esc).join('<br>'):'');
+  renderPeople();
+});
+function modal(html){ $('#mbox').innerHTML=html; $('#modal').hidden=false; }
+function closeModal(){ $('#modal').hidden=true; $('#mbox').innerHTML=''; }
+$('#modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
+function ask(text, yes){ modal(`<h2>${esc(t('confirm'))}</h2><p style="margin:0">${esc(text)}</p><div class="row" style="justify-content:flex-end"><button class="btn" id="aN">${esc(t('cancel'))}</button><button class="btn bad" id="aY">${esc(t('confirm'))}</button></div>`); $('#aN').onclick=closeModal; $('#aY').onclick=async()=>{ closeModal(); await yes(); }; }
+function openEmp(id){
+  const e=S.emps[id]; const lo=S.cfg.locations.map(l=>`<option value="${esc(l.id)}" ${l.id===e.loc?'selected':''}>${esc(nm(l))}</option>`).join(''), so=S.cfg.shifts.map(s=>`<option value="${esc(s.id)}" ${s.id===e.shift?'selected':''}>${esc(nm(s))}</option>`).join('');
+  modal(`<h2>${esc(t('editEmp'))} · <span class="mono">${esc(id)}</span></h2>
+   <div class="g2"><label class="fld"><span>${esc(t('first'))}</span><input type="text" id="eF" value="${esc(e.first)}"></label><label class="fld"><span>${esc(t('last'))}</span><input type="text" id="eL" value="${esc(e.last)}"></label></div>
+   <div class="g2"><label class="fld"><span>${esc(t('nick'))}</span><input type="text" id="eN" value="${esc(e.nick)}"></label><label class="fld"><span>${esc(t('dob'))}</span><input type="date" id="eD" value="${esc(e.dob||'')}"></label></div>
+   <div class="g2"><label class="fld"><span>${esc(t('phone'))}</span><input type="tel" id="eP" value="${esc(e.phone||'')}"></label><label class="fld"><span>${esc(t('wage'))}</span><input type="number" step="0.01" min="0" id="eW" class="mono" value="${e.wage==null?'':esc(e.wage)}"></label></div>
+   <div class="g2"><label class="fld"><span>${esc(t('defLoc'))}</span><select id="eLo"><option value=""></option>${lo}</select></label><label class="fld"><span>${esc(t('defShift'))}</span><select id="eS">${so}</select></label></div>
+   <label class="check"><input type="checkbox" id="eA" ${e.active!==false?'checked':''}><span>${esc(t('active'))}</span></label>
+   <div>${cBadge(e)} ${e.consentAt?`<span class="small muted">${esc(t('signedAt'))} ${esc(e.consentAt)} · v${esc(e.consentVersion||'')}</span>`:''}</div>
+   <div class="row">${e.consentType==='e-sign'?`<button class="btn" id="eSig">${esc(t('viewSig'))}</button>`:''}${consented(e)?`<label class="btn"><span>${esc(t('faceAdd'))}</span><input type="file" accept="image/*" capture="user" multiple id="eFace" hidden></label>`:''}<span class="small" id="eMsg"></span></div>
+   <div class="row"><button class="btn warn" id="eWd">${esc(t('withdraw'))}</button><button class="btn bad" id="eDel">${esc(t('delEmp'))}</button></div>
+   <div class="row" style="justify-content:flex-end"><button class="btn" id="eC">${esc(t('cancel'))}</button><button class="btn pri" id="eSv">${esc(t('save'))}</button></div>`);
+  $('#eC').onclick=closeModal;
+  $('#eSv').onclick=async()=>{ const w=$('#eW').value; const emp={id,first:$('#eF').value.trim(),last:$('#eL').value.trim(),nick:$('#eN').value.trim(),dob:$('#eD').value,phone:$('#eP').value.trim(),loc:$('#eLo').value,shift:$('#eS').value,active:$('#eA').checked,wage:w===''?null:+w};
+    try{ const r=await call('updateEmp',{emp}); S.emps[id]=Object.assign(S.emps[id],emp,r||{}); closeModal(); toast(t('saved')); renderPeople(); }catch(x){ toast(errText(x)); } };
+  if($('#eSig')) $('#eSig').onclick=async()=>{ try{ const s=await call('getSig',{empId:id}); if(s) $('#eMsg').innerHTML=`<img src="${s.sig}" alt="" style="max-width:240px;border:1px solid var(--line);border-radius:8px;display:block">`; }catch(x){ toast(errText(x)); } };
+  if($('#eFace')) $('#eFace').onchange=async ev=>{ const fs=[...ev.target.files].slice(0,3); ev.target.value=''; $('#eMsg').textContent=t('mLoad'); const shots=[];
+    for(const f of fs){ const c=await fileCanvas(f); const d=await detect(c); if(d) shots.push({desc:round5(d.descriptor),photo:thumb(c,d.detection.box)}); }
+    if(!shots.length){ $('#eMsg').textContent=t('noFace'); return; }
+    try{ const p={descs:shots.map(s=>s.desc),photo:shots[0].photo}; await call('setFace',Object.assign({empId:id},p)); S.faces[id]=p; S.emps[id].hasFace=true; $('#eMsg').textContent=t('saved'); renderPeople(); }catch(x){ $('#eMsg').textContent=errText(x); } };
+  $('#eWd').onclick=()=>ask(t('cfWithdraw'), async()=>{ try{ await call('withdraw',{empId:id}); delete S.faces[id]; Object.assign(S.emps[id],{hasFace:false,consentType:'withdrawn'}); renderPeople(); toast(t('saved')); }catch(x){ toast(errText(x)); } });
+  $('#eDel').onclick=()=>ask(t('cfDel'), async()=>{ try{ await call('deleteEmp',{empId:id}); delete S.faces[id]; delete S.emps[id]; renderPeople(); toast(t('saved')); }catch(x){ toast(errText(x)); } });
+}
+
+/* ---------------- REPORT ---------------- */
+const mRange=off=>{ const n=new Date(); const a=new Date(n.getFullYear(),n.getMonth()+off,1); const b=off===0?n:new Date(n.getFullYear(),n.getMonth()+off+1,0); return [ymd(a),ymd(b)]; };
+const cutRange=()=>{ const n=new Date(); const e=n.getDate()>20?new Date(n.getFullYear(),n.getMonth()+1,20):new Date(n.getFullYear(),n.getMonth(),20); return [ymd(new Date(e.getFullYear(),e.getMonth()-1,21)),ymd(e)]; };
+[$('#rpf').value,$('#rpt').value]=mRange(0); [$('#pyf').value,$('#pyt').value]=mRange(0);
+async function fetchAtt(from,to){ const rows=await call('att',{from,to}); return rows.map(r=>Object.assign(r,{c:calc(r)})).sort((a,b)=>a.wd===b.wd?a.id.localeCompare(b.id):a.wd.localeCompare(b.wd)); }
+async function loadReport(){ $('#rpBody').innerHTML=`<div class="small muted">…</div>`; try{ S.rp=await fetchAtt($('#rpf').value,$('#rpt').value); renderReport(); }catch(e){ $('#rpBody').innerHTML=`<div class="empty">${esc(errText(e))}</div>`; } }
+$('#rpLoad').addEventListener('click',loadReport); ['#rpl','#rps','#rpq'].forEach(q=>$(q).addEventListener('input',renderReport));
+const rpRows=()=>{ const l=$('#rpl').value,s=$('#rps').value,q=$('#rpq').value.trim().toLowerCase(); return S.rp.filter(r=>(!l||r.loc===l)&&(!s||r.shift===s)&&(!q||(r.id+' '+empName(r.id)).toLowerCase().includes(q))); };
+function renderReport(){
+  $('#rpAdd').hidden=!(S.role==='admin'&&S.edit);
+  const rows=rpRows(); if(!rows.length){ $('#rpBody').innerHTML=`<div class="empty">${esc(t('noData'))}</div>`; return; }
+  const ed=S.role==='admin'&&S.edit; let tn=0,to=0,te=0;
+  const body=rows.map(r=>{ const c=r.c||{}; tn+=c.normal||0; to+=c.otMin||0; te+=c.otEq||0;
+    const st=c.open?`<span class="badge b">${esc(t('open'))}</span>`:c.late>0?`<span class="badge w">${esc(t('late'))} ${c.late}</span>`:`<span class="badge g">${esc(t('ok'))}</span>`;
+    return `<tr class="${ed?'click':''}" data-k="${esc(r.key)}"><td class="mono">${esc(r.wd)}</td><td class="mono">${esc(r.id)}</td><td>${esc(empName(r.id))}</td><td>${esc(nm(locBy(r.loc)))}${r.outLoc&&r.outLoc!==r.loc?' → '+esc(nm(locBy(r.outLoc))):''}</td><td>${esc(nm(shiftBy(r.shift)))}</td><td class="n">${fmtMin(c.in)}</td><td class="n">${fmtMin(c.out)}</td><td class="n">${c.open?'—':hrs(c.normal)}</td><td class="n">${c.open?'—':hrs(c.otMin)}</td><td class="n">${c.open?'—':hrs(c.otEq)}</td><td>${st}${r.edited?' ✎':''}</td></tr>`; }).join('');
+  $('#rpBody').innerHTML=`<div class="small muted" style="margin-bottom:8px">${rows.length} ${esc(t('rows'))}</div><div class="tbl"><table><thead><tr><th>${esc(t('date'))}</th><th>${esc(t('empId'))}</th><th>${esc(t('name'))}</th><th>${esc(t('loc'))}</th><th>${esc(t('shift'))}</th><th class="n">${esc(t('in'))}</th><th class="n">${esc(t('out'))}</th><th class="n">${esc(t('normal'))}</th><th class="n">${esc(t('ot'))}</th><th class="n">${esc(t('otEq'))}</th><th>${esc(t('status'))}</th></tr></thead><tbody>${body}</tbody><tfoot><tr><td colspan="7"></td><td class="n">${hrs(tn)}</td><td class="n">${hrs(to)}</td><td class="n">${hrs(te)}</td><td></td></tr></tfoot></table></div>`;
+}
+$('#rpBody').addEventListener('click', e=>{ const tr=e.target.closest('tr.click'); if(!tr) return; openRec(S.rp.find(r=>r.key===tr.dataset.k)); });
+$('#rpAdd').addEventListener('click', ()=>openRec(null));
+const toD=ts=>ts?ymd(new Date(ts)):''; const toT=ts=>{ if(!ts) return ''; const d=new Date(ts); return pad(d.getHours())+':'+pad(d.getMinutes()); };
+function normTime(v){ v=String(v||'').replace(/[^0-9]/g,''); if(v.length===3) v='0'+v; if(v.length&&v.length<=2) v=pad(+v)+'00'; if(v.length!==4) return null; const h=+v.slice(0,2), m=+v.slice(2); return (h<24&&m<60)?pad(h)+':'+pad(m):null; }
+const joinDT=(d,tm)=>{ const n=normTime(tm); if(!d||!n) return null; const [y,mo,da]=d.split('-').map(Number); const [h,mi]=n.split(':').map(Number); return new Date(y,mo-1,da,h,mi).getTime(); };
+document.addEventListener('change', e=>{ const el=e.target; if(!el.classList||!el.classList.contains('tm')||el.closest('#v-set')) return; const n=normTime(el.value); if(n) el.value=n; else if(el.value){ el.style.borderColor='var(--bad)'; setTimeout(()=>el.style.borderColor='',1500); } });
+function openRec(r){
+  const isNew=!r; r=r||{};
+  const eo=Object.values(S.emps).sort((a,b)=>a.id.localeCompare(b.id)).map(e=>`<option value="${esc(e.id)}">${esc(e.id)} · ${esc(e.first)} ${esc(e.last)}</option>`).join('');
+  const lo=S.cfg.locations.map(l=>`<option value="${esc(l.id)}" ${l.id===r.loc?'selected':''}>${esc(nm(l))}</option>`).join(''), so=S.cfg.shifts.map(s=>`<option value="${esc(s.id)}" ${s.id===r.shift?'selected':''}>${esc(nm(s))}</option>`).join('');
+  modal(`<h2>${esc(t(isNew?'addRec':'editRec'))}</h2>
+   ${isNew?`<div class="g2" style="grid-template-columns:minmax(0,1fr)"><label class="fld"><span>${esc(t('emp'))}</span><select id="xE">${eo}</select></label><label class="fld"><span>${esc(t('wd'))}</span><input type="date" id="xW" value="${ymd(new Date())}"></label></div>`:`<div class="small muted">${esc(r.wd)} · ${esc(empName(r.id))}</div>`}
+   <div class="g2"><label class="fld"><span>${esc(t('loc'))}</span><select id="xL">${lo}</select></label><label class="fld"><span>${esc(t('shift'))}</span><select id="xS">${so}</select></label></div>
+   <label class="fld"><span>${esc(t('in'))}</span><div class="dt"><input type="date" id="xId" value="${toD(r.in)}"><input type="text" class="tm" inputmode="numeric" maxlength="5" placeholder="HH:MM" id="xIt" value="${toT(r.in)}"></div></label>
+   <label class="fld"><span>${esc(t('out'))}</span><div class="dt"><input type="date" id="xOd" value="${toD(r.out)}"><input type="text" class="tm" inputmode="numeric" maxlength="5" placeholder="HH:MM" id="xOt" value="${toT(r.out)}"></div></label>
+   <div class="row" style="justify-content:space-between">${isNew?'<span></span>':`<button class="btn bad" id="xD">${esc(t('delRec'))}</button>`}<div class="row"><button class="btn" id="xC">${esc(t('cancel'))}</button><button class="btn pri" id="xV">${esc(t('save'))}</button></div></div>`);
+  $('#xC').onclick=closeModal;
+  $('#xV').onclick=async()=>{ const id=isNew?$('#xE').value:r.id, wd=isNew?$('#xW').value:r.wd; if(!$('#xId').value) $('#xId').value=wd;
+    const i=joinDT($('#xId').value,$('#xIt').value), o=($('#xOt').value.trim())?joinDT($('#xOd').value||$('#xId').value,$('#xOt').value):null; if(!id||!wd||!i){ toast(t('in')+' ?'); return; }
+    try{ await call('saveRec',{oldKey:r.key,rec:{id,wd,loc:$('#xL').value,shift:$('#xS').value,in:i,out:o}}); closeModal(); toast(t('saved')); loadReport(); }catch(x){ toast(errText(x)); } };
+  if(!isNew) $('#xD').onclick=()=>ask(t('delRec')+'?', async()=>{ try{ await call('deleteRec',{key:r.key}); toast(t('saved')); loadReport(); }catch(x){ toast(errText(x)); } });
+}
+
+/* ---------------- PAYROLL ---------------- */
+$('#pyPre').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; document.querySelectorAll('#pyPre button').forEach(x=>x.classList.toggle('on',x===b));
+  const [a,z]=b.dataset.p==='this'?mRange(0):b.dataset.p==='last'?mRange(-1):cutRange(); $('#pyf').value=a; $('#pyt').value=z; loadPay(); });
+$('#pyLoad').addEventListener('click',loadPay); $('#pyl').addEventListener('input',renderPay);
+async function loadPay(){ $('#pyBody').innerHTML=`<div class="small muted">…</div>`; try{ S.py=await fetchAtt($('#pyf').value,$('#pyt').value); renderPay(); }catch(e){ $('#pyBody').innerHTML=`<div class="empty">${esc(errText(e))}</div>`; } }
+function payAgg(){ const l=$('#pyl').value, agg={}, rates=new Set();
+  S.py.filter(r=>!l||r.loc===l).forEach(r=>{ const c=r.c; if(!c) return; const a=agg[r.id]=agg[r.id]||{id:r.id,days:0,normal:0,ot:{},otMin:0,otEq:0,late:0,open:0};
+    if(c.open){ a.open++; return; } a.days++; a.normal+=c.normal; a.late+=c.late; a.otMin+=c.otMin; a.otEq+=c.otEq; c.ot.forEach(o=>{ if(!o.m) return; rates.add(o.rate); a.ot[o.rate]=(a.ot[o.rate]||0)+o.m; }); });
+  const list=Object.values(agg).sort((a,b)=>a.id.localeCompare(b.id));
+  list.forEach(a=>{ const w=S.emps[a.id]&&S.emps[a.id].wage; a.wage=w==null||w===''?null:+w; a.pay=a.wage==null?null:(a.normal+a.otEq)/60*a.wage; });
+  return {list,rates:[...rates].sort((a,b)=>a-b)}; }
+const money=v=>v==null?'—':v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+function renderPay(){
+  const {list,rates}=payAgg(), sp=S.role==='admin';
+  const sum=list.reduce((s,a)=>({n:s.n+a.normal,o:s.o+a.otMin,e:s.e+a.otEq,p:s.p+(a.pay||0)}),{n:0,o:0,e:0,p:0});
+  $('#pyK').innerHTML=[[list.length,'kEmp'],[hrs(sum.n),'kNorm'],[hrs(sum.o),'kOt'],[hrs(sum.e),'kOtEq']].concat(sp?[[money(sum.p),'kPay']]:[]).map(([v,k])=>`<div class="kpi"><b>${esc(v)}</b><span>${esc(t(k))}</span></div>`).join('');
+  $('#pyNote').textContent=t('payNote');
+  if(!list.length){ $('#pyBody').innerHTML=`<div class="empty">${esc(t('noData'))}</div>`; return; }
+  $('#pyBody').innerHTML=`<div class="tbl"><table><thead><tr><th>${esc(t('empId'))}</th><th>${esc(t('name'))}</th><th class="n">${esc(t('days'))}</th><th class="n">${esc(t('normal'))}</th>${rates.map(r=>`<th class="n">OT ×${r}</th>`).join('')}<th class="n">${esc(t('ot'))}</th><th class="n">${esc(t('otEq'))}</th><th class="n">${esc(t('lateMin'))}</th><th class="n">${esc(t('openCnt'))}</th>${sp?`<th class="n">${esc(t('wage'))}</th><th class="n">${esc(t('pay'))}</th>`:''}</tr></thead><tbody>${
+    list.map(a=>`<tr><td class="mono">${esc(a.id)}</td><td>${esc(empName(a.id))}</td><td class="n">${a.days}</td><td class="n">${hrs(a.normal)}</td>${rates.map(r=>`<td class="n">${hrs(a.ot[r]||0)}</td>`).join('')}<td class="n">${hrs(a.otMin)}</td><td class="n">${hrs(a.otEq)}</td><td class="n">${a.late}</td><td class="n">${a.open?`<span class="badge b">${a.open}</span>`:'0'}</td>${sp?`<td class="n">${money(a.wage)}</td><td class="n">${money(a.pay)}</td>`:''}</tr>`).join('')
+  }</tbody><tfoot><tr><td colspan="3"></td><td class="n">${hrs(sum.n)}</td>${rates.map(r=>`<td class="n">${hrs(list.reduce((s,a)=>s+(a.ot[r]||0),0))}</td>`).join('')}<td class="n">${hrs(sum.o)}</td><td class="n">${hrs(sum.e)}</td><td colspan="2"></td>${sp?`<td></td><td class="n">${money(sum.p)}</td>`:''}</tr></tfoot></table></div>`;
+}
+
+/* ---------------- Excel (SheetJS, lazy) ---------------- */
+let xlsxP=null; const loadXLSX=()=> window.XLSX ? Promise.resolve() : (xlsxP=xlsxP||new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=CONFIG.XLSX_URL; s.onload=res; s.onerror=rej; document.head.appendChild(s); }));
+async function saveXlsx(name, sheets){ await loadXLSX(); const wb=XLSX.utils.book_new(); sheets.forEach(([n,aoa,w])=>{ const ws=XLSX.utils.aoa_to_sheet(aoa); if(w) ws['!cols']=w.map(x=>({wch:x})); XLSX.utils.book_append_sheet(wb,ws,n); }); XLSX.writeFile(wb,name); }
+$('#rpXls').addEventListener('click', ()=>{ const a=[[t('date'),t('empId'),t('name'),t('loc')+' ('+t('in')+')',t('loc')+' ('+t('out')+')',t('shift'),t('in'),t('out'),t('normal'),t('ot'),t('otEq'),t('lateMin'),t('status'),'GPS '+t('in'),'GPS '+t('out')]];
+  rpRows().forEach(r=>{ const c=r.c||{}; a.push([r.wd,r.id,empName(r.id),nm(locBy(r.loc)),r.out?nm(locBy(r.outLoc||r.loc)):'',nm(shiftBy(r.shift)),fmtMin(c.in),fmtMin(c.out),c.open?'':+hrs(c.normal),c.open?'':+hrs(c.otMin),c.open?'':+hrs(c.otEq),c.late||0,c.open?t('open'):t('ok'),r.inGps||'',r.outGps||'']); });
+  saveXlsx(`Attendance_${$('#rpf').value}_${$('#rpt').value}.xlsx`,[['Attendance',a,[11,10,26,18,18,12,8,8,10,9,9,9,12,26,26]]]).catch(()=>toast(t('err'))); });
+$('#pyXls').addEventListener('click', ()=>{ const {list,rates}=payAgg(), sp=S.role==='admin';
+  const a=[[t('empId'),t('name'),t('days'),t('normal'),...rates.map(r=>'OT x'+r),t('ot'),t('otEq'),t('lateMin'),t('openCnt'),...(sp?[t('wage'),t('pay')]:[])]];
+  list.forEach(x=>a.push([x.id,empName(x.id),x.days,+hrs(x.normal),...rates.map(r=>+hrs(x.ot[r]||0)),+hrs(x.otMin),+hrs(x.otEq),x.late,x.open,...(sp?[x.wage??'',x.pay==null?'':+x.pay.toFixed(2)]:[])]));
+  saveXlsx(`Payroll_Hours_${$('#pyf').value}_${$('#pyt').value}.xlsx`,[['Payroll',a,[10,26,6,10,...rates.map(()=>9),9,9,9,9,10,12]]]).catch(()=>toast(t('err'))); });
+
+/* ---------------- Import template ---------------- */
+const TPL = {
+  Locations:[['Code','NameTH','NameEN','Active'],['#L01','ไลน์ประกอบ 1 (ตัวอย่าง ลบ # เพื่อใช้)','Assembly Line 1 (example)','Y']],
+  Shifts:[['Code','NameTH','NameEN','Start','End','BreakMin'],['DAY','กะเช้า','Day shift','08:00','17:30',90],['NIGHT','กะดึก','Night shift','20:00','05:30',90]],
+  OT:[['Shift','From','To','Rate'],['DAY','17:30','20:00',1.5],['DAY','20:00','22:00',1.5],['DAY','22:00','24:00',1.5],['NIGHT','05:30','08:00',1.5]],
+  Employees:[['EmpID','FirstName','LastName','Nickname','DOB','Phone','Location','Shift','Active','WagePerHour','PaperConsentDate'],['#10023','สมมติ','ตัวอย่าง','เอ','1995-04-12','0812345678','L01','DAY','Y',62.5,'']]
+};
+$('#tplBtn').addEventListener('click', ()=>saveXlsx('Clocking_Import_Template.xlsx',Object.keys(TPL).map(k=>[k,TPL[k],TPL[k][0].map(()=>16)])).catch(()=>toast(t('err'))));
+const cellTxt = v => v==null ? '' : (v instanceof Date ? ymd(v) : String(v).trim());
+const timeTxt = v => { if(typeof v==='number' && v<1){ const m=Math.round(v*1440); return pad(Math.floor(m/60))+':'+pad(m%60); } const s=cellTxt(v); const m=s.match(/^(\d{1,2})[:.](\d{2})/); return m?pad(+m[1])+':'+m[2]:s; };
+$('#impFile').addEventListener('change', async e=>{
+  const f=e.target.files[0]; e.target.value=''; if(!f) return;
+  try{
+    await loadXLSX(); const wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true});
+    const get=n=>{ const k=wb.SheetNames.find(x=>x.toLowerCase()===n.toLowerCase()); return k?XLSX.utils.sheet_to_json(wb.Sheets[k],{defval:'',raw:true}).filter(r=>!String(Object.values(r)[0]||'').trim().startsWith('#')):[]; };
+    const p={
+      locations:get('Locations').filter(r=>cellTxt(r.Code)).map(r=>({Code:cellTxt(r.Code),NameTH:cellTxt(r.NameTH),NameEN:cellTxt(r.NameEN),Active:cellTxt(r.Active)||'Y'})),
+      shifts:get('Shifts').filter(r=>cellTxt(r.Code)).map(r=>({Code:cellTxt(r.Code),NameTH:cellTxt(r.NameTH),NameEN:cellTxt(r.NameEN),Start:timeTxt(r.Start),End:timeTxt(r.End),BreakMin:+r.BreakMin||0})),
+      ot:get('OT').filter(r=>cellTxt(r.Shift)).map(r=>({Shift:cellTxt(r.Shift),From:timeTxt(r.From),To:timeTxt(r.To),Rate:+r.Rate||1})),
+      employees:get('Employees').filter(r=>cellTxt(r.EmpID)).map(r=>({EmpID:cellTxt(r.EmpID),FirstName:cellTxt(r.FirstName),LastName:cellTxt(r.LastName),Nickname:cellTxt(r.Nickname),DOB:cellTxt(r.DOB),Phone:cellTxt(r.Phone),Location:cellTxt(r.Location),Shift:cellTxt(r.Shift),Active:cellTxt(r.Active),WagePerHour:cellTxt(r.WagePerHour),PaperConsentDate:cellTxt(r.PaperConsentDate)}))
+    };
+    $('#impPrev').innerHTML=`<div class="kpis">${[['Locations',p.locations.length],['Shifts',p.shifts.length],['OT',p.ot.length],['Employees',p.employees.length]].map(([k,v])=>`<div class="kpi"><b>${v}</b><span>${k}</span></div>`).join('')}</div><button class="btn pri block" id="impGo" style="margin-top:10px">${esc(t('impConfirm'))}</button>`;
+    $('#impGo').onclick=async()=>{ try{ const r=await call('import',p); await boot(); renderAll(); $('#impPrev').innerHTML=`<div class="lock" style="background:var(--good-bg);color:var(--good)">${esc(t('impDone'))}: Locations ${r.locations} · Shifts ${r.shifts} · OT ${r.ot} · Employees ${r.employees}${r.skipped.length?' · skipped '+esc(r.skipped.join(', ')):''}</div>`; }catch(x){ toast(errText(x)); } };
+  }catch(x){ console.error(x); toast(t('err')); }
+});
+
+/* ---------------- SETTINGS ---------------- */
+const C = () => (S.edit&&S.draft) ? S.draft : S.cfg;
+function renderSettings(){
+  if(!S.cfg) return; const ed=S.role==='admin'&&S.edit, c=C(), dis=ed?'':'disabled';
+  $('#setLock').hidden=ed; $('#setLock').textContent=S.role==='admin'?t('setLockA'):t('setLockO');
+  $('#impCard').hidden=!ed; $('#pinCard').hidden=!ed; document.querySelectorAll('#v-set .ed').forEach(x=>x.hidden=!ed);
+  $('#locList').innerHTML = c.locations.length ? c.locations.map((l,i)=>`<div class="li"><div class="g3"><label class="fld"><span>${esc(t('code'))}</span><input type="text" class="mono" data-l="${i}" data-k="id" value="${esc(l.id)}" ${dis}></label><label class="fld"><span>${esc(t('nameTh'))}</span><input type="text" data-l="${i}" data-k="th" value="${esc(l.th)}" ${dis}></label><label class="fld"><span>${esc(t('nameEn'))}</span><input type="text" data-l="${i}" data-k="en" value="${esc(l.en)}" ${dis}></label></div>${ed?`<button class="xbtn" data-dl="${i}" aria-label="delete">✕</button>`:'<span></span>'}</div>`).join('') : `<div class="empty">${esc(t('noLoc'))}</div>`;
+  const tmIn = (attrs,val) => `<input type="text" class="tm" inputmode="numeric" maxlength="5" placeholder="HH:MM" ${attrs} value="${esc(val)}" ${dis}>`;
+  $('#shiftList').innerHTML = c.shifts.map((s,i)=>`<div class="shiftc">
+    <div class="hd"><span class="code">${esc(s.id||'—')}</span><b style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(nm(s))}</b>${ed&&c.shifts.length>1?`<button class="xbtn" data-ds="${i}" aria-label="delete">✕</button>`:''}</div>
+    <div class="g3"><label class="fld"><span>${esc(t('code'))}</span><input type="text" class="mono" data-s="${i}" data-k="id" value="${esc(s.id)}" ${dis}></label><label class="fld"><span>${esc(t('nameTh'))}</span><input type="text" data-s="${i}" data-k="th" value="${esc(s.th)}" ${dis}></label><label class="fld"><span>${esc(t('nameEn'))}</span><input type="text" data-s="${i}" data-k="en" value="${esc(s.en)}" ${dis}></label></div>
+    <div class="g3"><label class="fld"><span>${esc(t('start'))}</span>${tmIn(`data-s="${i}" data-k="start"`,s.start)}</label><label class="fld"><span>${esc(t('end'))}</span>${tmIn(`data-s="${i}" data-k="end"`,s.end)}</label><label class="fld"><span>${esc(t('brk'))}</span><input type="number" min="0" inputmode="numeric" class="num" data-s="${i}" data-k="breakMin" value="${esc(s.breakMin)}" ${dis}></label></div>
+    <h3 style="margin:6px 0 0">${esc(t('otP'))}</h3>
+    ${(s.ot||[]).length?'':`<div class="small muted">—</div>`}
+    ${(s.ot||[]).map((o,j)=>`<div class="otr"><div class="oh"><span>OT ${j+1}</span>${ed?`<button class="xbtn" data-do="${i}:${j}" aria-label="delete">✕</button>`:''}</div><div class="g3"><label class="fld"><span>${esc(t('from'))}</span>${tmIn(`data-s="${i}" data-o="${j}" data-k="from"`,o.from)}</label><label class="fld"><span>${esc(t('to'))}</span>${tmIn(`data-s="${i}" data-o="${j}" data-k="to"`,o.to)}</label><label class="fld"><span>${esc(t('rate'))}</span><input type="number" step="0.5" min="0" inputmode="decimal" class="num" data-s="${i}" data-o="${j}" data-k="rate" value="${esc(o.rate)}" ${dis}></label></div></div>`).join('')}
+    ${ed?`<div><button class="btn warn" data-ao="${i}">＋ ${esc(t('addOt'))}</button></div>`:''}</div>`).join('');
+  $('#sGrace').value=c.graceMin; $('#sRound').value=c.otRoundMin; $('#sThr').value=c.threshold; $('#sSite').value=c.siteName||''; $('#sLogo').value=c.logoUrl&&!c.logoUrl.startsWith('data:')?c.logoUrl:(c.logoUrl?'(image file)':'');
+  $('#sVer').value=c.consent.version||''; $('#sTh').value=c.consent.th||''; $('#sEn').value=c.consent.en||'';
+  ['#sGrace','#sRound','#sThr','#sSite','#sLogo','#sVer','#sTh','#sEn'].forEach(q=>$(q).disabled=!ed);
+}
+$('#v-set').addEventListener('input', e=>{ if(!(S.edit&&S.draft)) return; const el=e.target, k=el.dataset.k, d=S.draft;
+  if(el.dataset.l!=null) d.locations[+el.dataset.l][k]=el.value;
+  else if(el.dataset.o!=null) d.shifts[+el.dataset.s].ot[+el.dataset.o][k]=k==='rate'?+el.value:el.value;
+  else if(el.dataset.s!=null) d.shifts[+el.dataset.s][k]=k==='breakMin'?+el.value:el.value;
+  else ({sGrace:()=>d.graceMin=+el.value,sRound:()=>d.otRoundMin=+el.value,sThr:()=>d.threshold=+el.value,sSite:()=>d.siteName=el.value,sLogo:()=>d.logoUrl=el.value,sVer:()=>d.consent.version=el.value,sTh:()=>d.consent.th=el.value,sEn:()=>d.consent.en=el.value}[el.id]||(()=>{}))();
+  $('#saveMsg').textContent='•'; });
+$('#v-set').addEventListener('change', e=>{ const el=e.target; if(!el.classList.contains('tm')) return;
+  let v=el.value.replace(/[^0-9]/g,''); if(v.length===3) v='0'+v; if(v.length<=2&&v) v=pad(+v)+'00';
+  if(v.length===4){ const h=+v.slice(0,2), m=+v.slice(2); if(h<=24&&m<60&&!(h===24&&m>0)){ el.value=pad(h)+':'+pad(m); el.dispatchEvent(new Event('input',{bubbles:true})); return; } }
+  el.style.borderColor='var(--bad)'; setTimeout(()=>el.style.borderColor='',1500); });
+$('#v-set').addEventListener('click', e=>{ if(!(S.edit&&S.draft)) return; const b=e.target.closest('button'); if(!b) return; const d=S.draft;
+  if(b.dataset.dl!=null) d.locations.splice(+b.dataset.dl,1);
+  else if(b.dataset.ds!=null) d.shifts.splice(+b.dataset.ds,1);
+  else if(b.dataset.do!=null){ const [i,j]=b.dataset.do.split(':').map(Number); d.shifts[i].ot.splice(j,1); }
+  else if(b.dataset.ao!=null){ const s=d.shifts[+b.dataset.ao]; const l=s.ot[s.ot.length-1]; s.ot.push({from:l?l.to:s.end,to:'',rate:1.5}); }
+  else if(b.id==='addLoc') d.locations.push({id:'L'+pad(d.locations.length+1),th:'',en:''});
+  else if(b.id==='addShift') d.shifts.push({id:'S'+(d.shifts.length+1),th:'',en:'',start:'08:00',end:'17:00',breakMin:60,ot:[]});
+  else return; $('#saveMsg').textContent='•'; renderSettings(); });
+$('#logoFile').addEventListener('change', async e=>{ const f=e.target.files[0]; e.target.value=''; if(!f||!S.draft) return;
+  const c=await fileCanvas(f,240); S.draft.logoUrl=c.toDataURL('image/png'); $('#sLogo').value='(image file)'; $('#saveMsg').textContent='•'; });
+$('#saveSet').addEventListener('click', async ()=>{
+  const d=S.draft, seen=new Set();
+  for(const l of d.locations){ l.id=String(l.id).trim(); if(!l.id||seen.has('L'+l.id)){ toast(t('code')+' ?'); return; } seen.add('L'+l.id); }
+  for(const s of d.shifts){ s.id=String(s.id).trim(); if(!s.id||seen.has('S'+s.id)){ toast(t('code')+' ?'); return; } seen.add('S'+s.id); s.ot=(s.ot||[]).filter(o=>o.from&&o.to); }
+  const settings={graceMin:d.graceMin,otRoundMin:d.otRoundMin,threshold:d.threshold,siteName:d.siteName,logoUrl:d.logoUrl,consentVersion:d.consent.version,consentTH:d.consent.th,consentEN:d.consent.en,adminPin:$('#pA').value.trim(),leaderPin:$('#pL').value.trim(),viewerPin:$('#pV').value.trim()};
+  try{ const cfg=await call('saveConfig',{locations:d.locations,shifts:d.shifts,settings}); S.cfg=cfg; S.cfg.consent=S.cfg.consent||{}; S.draft=JSON.parse(JSON.stringify(S.cfg)); ['#pA','#pL','#pV'].forEach(q=>$(q).value=''); $('#saveMsg').textContent=t('saved'); toast(t('saved')); renderBrand(); renderAll(); }
+  catch(x){ toast(errText(x)); }
+});
+
+/* ---------------- start ---------------- */
+applyLang();
+(function autoLogin(){ const p=LS.get('fc-pin'); if(p){ $('#rememberPin').checked=true; doLogin(p); } })();
+</script>
+</body>
+</html>
