@@ -125,6 +125,10 @@ input:disabled,select:disabled,textarea:disabled{background:var(--bg);color:var(
 .seg button.on{background:var(--blue-bg);color:var(--navy)}
 .cam{position:relative;border-radius:16px;overflow:hidden;background:#0b1424;aspect-ratio:4/3;max-width:100%}
 .cam video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:block}
+.cam.rear video{transform:none}
+.flip{position:absolute;top:10px;right:10px;z-index:2;display:flex;align-items:center;gap:6px;height:44px;padding:0 14px;border-radius:99px;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:13px;font-weight:600;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.flip svg{width:20px;height:20px}
+.flip:active{background:rgba(0,0,0,.75)}
 .cam .frame{position:absolute;inset:12% 22%;border:3px solid rgba(255,255,255,.7);border-radius:45% 45% 40% 40%;pointer-events:none;transition:border-color .2s}
 .cam.hit .frame{border-color:#3fd18f}
 .cam .hint{position:absolute;left:0;right:0;bottom:0;padding:10px 14px;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff;font-size:14px;font-weight:500}
@@ -187,6 +191,28 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--blue-bg)}
 .modal .box{background:#fff;width:min(560px,100%);max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px max(18px,env(safe-area-inset-left)) calc(18px + env(safe-area-inset-bottom));display:grid;gap:12px}
 @media(min-width:700px){.modal{align-items:center}.modal .box{border-radius:18px}}
 .modal h2{margin:0;font-size:18px}
+.cf{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:max(20px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));background:rgba(9,20,40,.55)}
+.cf .box{width:min(420px,100%);background:#fff;border-radius:22px;overflow:hidden;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.cf .top{padding:22px 20px 18px;color:#fff;display:grid;justify-items:center;gap:6px}
+.cf.in .top{background:var(--good)} .cf.out .top{background:var(--blue)} .cf.dup .top{background:#c98a10} .cf.fail .top{background:var(--bad)} .cf.wait .top{background:var(--navy)}
+.cf .ico{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center}
+.cf .ico svg{width:44px;height:44px}
+.cf .ttl{font-size:28px;font-weight:700;line-height:1.15}
+.cf .tm{font-family:var(--mono);font-size:44px;font-weight:600;line-height:1;letter-spacing:-.01em}
+.cf .body{padding:18px 20px 20px;display:grid;gap:12px;justify-items:center}
+.cf .who{display:flex;align-items:center;gap:12px;text-align:left;width:100%}
+.cf .who img,.cf .who .ph{width:64px;height:64px;border-radius:14px;object-fit:cover;background:var(--bg);flex:none}
+.cf .who b{display:block;font-size:18px;line-height:1.25}
+.cf .meta{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.cf .bar{height:5px;background:var(--line);width:100%;border-radius:9px;overflow:hidden}
+.cf .bar i{display:block;height:100%;width:100%;background:currentColor;transform-origin:left}
+.cf.in .bar i{color:var(--good)} .cf.out .bar i{color:var(--blue)} .cf.dup .bar i{color:#c98a10} .cf.fail .bar i{color:var(--bad)}
+.cf .acts{display:grid;grid-template-columns:1fr 1.2fr;gap:10px;width:100%}
+.cf .acts .btn{white-space:nowrap;padding-left:10px;padding-right:10px}
+@keyframes cfbar{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+@keyframes cfpop{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:no-preference){.cf .box{animation:cfpop .22s ease-out}}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom));z-index:60;background:var(--fg);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;max-width:calc(100% - 32px)}
 .prog{height:8px;border-radius:9px;background:var(--line);overflow:hidden}
 .prog i{display:block;height:100%;background:var(--blue);width:0}
@@ -239,7 +265,7 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--blue-bg)}
           <div class="step"><div class="lbl" id="lblShift"><b>2</b><span data-t="pickShift">Shift</span></div><div class="chips" id="shiftChips"></div></div>
           <div class="step"><div class="lbl"><b>3</b><span data-t="pickMode">Type</span></div>
             <div class="seg" id="modeSeg"><button data-m="auto" data-t="mAuto">Auto</button><button data-m="in" data-t="mIn">In</button><button data-m="out" data-t="mOut">Out</button></div></div>
-          <div class="cam" id="cam"><video id="video" playsinline muted></video><div class="frame"></div><div class="hint" id="camHint"></div><div class="off" id="camOff"></div></div>
+          <div class="cam" id="cam"><button type="button" class="flip" id="flipBtn" hidden aria-label="Switch camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><path d="M9.5 12.5a2.7 2.7 0 0 1 4.6-1.6M14.5 13.5a2.7 2.7 0 0 1-4.6 1.6"/><path d="M14.3 9.6v1.5h-1.5M9.7 16.4v-1.5h1.5"/></svg><span data-t="flip">Switch</span></button><video id="video" playsinline muted></video><div class="frame"></div><div class="hint" id="camHint"></div><div class="off" id="camOff"></div></div>
           <div class="row">
             <button class="btn blue lg" id="camBtn" style="flex:1 1 180px"></button>
             <label class="btn lg" id="photoBtn" style="flex:1 1 140px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span data-t="takeScan">Photo scan</span><input type="file" accept="image/*" capture="user" id="scanFile" hidden></label>
@@ -298,7 +324,7 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--blue-bg)}
       <div class="card" id="rs3" hidden>
         <h2 data-t="s3">3 · Face</h2>
         <p class="muted small" style="margin-top:0" data-t="faceHint">Take photos</p>
-        <div class="cam" id="regCam" hidden><video id="regVideo" playsinline muted></video><div class="frame"></div></div>
+        <div class="cam" id="regCam" hidden><button type="button" class="flip" id="regFlip" hidden aria-label="Switch camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><path d="M9.5 12.5a2.7 2.7 0 0 1 4.6-1.6M14.5 13.5a2.7 2.7 0 0 1-4.6 1.6"/><path d="M14.3 9.6v1.5h-1.5M9.7 16.4v-1.5h1.5"/></svg><span data-t="flip">Switch</span></button><video id="regVideo" playsinline muted></video><div class="frame"></div></div>
         <div class="row" style="margin-top:10px">
           <button class="btn blue" id="regSnap" hidden data-t="snap">Capture</button>
           <label class="btn"><span data-t="photoUp">Take / choose photo</span><input type="file" accept="image/*" capture="user" id="regFile" hidden></label>
@@ -387,6 +413,7 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--blue-bg)}
 </div>
 
 <div class="modal" id="modal" hidden><div class="box" id="mbox"></div></div>
+<div class="cf" id="cf" hidden></div>
 <div class="toast" id="toast" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/dist/face-api.js"></script>
@@ -478,7 +505,7 @@ th:{appTitle:"ระบบลงเวลาด้วยใบหน้า",barT
  brand:"โลโก้และชื่อไซต์",siteName:"ชื่อไซต์",logoUrl:"ลิงก์โลโก้",logoFile:"ใช้ไฟล์รูปโลโก้",consentAdm:"ข้อความหนังสือยินยอม",consentRev:"ควรให้ HR / DPO ตรวจก่อนใช้งานจริง แก้ข้อความแล้วให้เปลี่ยนเลขฉบับ เว้นว่าง = ใช้ข้อความมาตรฐาน",saveSet:"บันทึกการตั้งค่า",
  editEmp:"แก้ไขพนักงาน",active:"ใช้งาน",faceAdd:"เพิ่ม/เปลี่ยนรูปใบหน้า",withdraw:"ถอนความยินยอม (ลบใบหน้า)",delEmp:"ลบพนักงาน",viewSig:"ดูลายเซ็น",signNow:"ลงนามยินยอม",
  cfWithdraw:"ลบภาพและแม่แบบใบหน้าของพนักงานนี้? จะสแกนไม่ได้จนกว่าจะลงนามและเพิ่มรูปใหม่",cfDel:"ลบพนักงานและข้อมูลส่วนบุคคลทั้งหมด? บันทึกเวลาเดิมยังอยู่",
- editRec:"แก้ไขบันทึกเวลา",emp:"พนักงาน",wd:"วันทำงาน",delRec:"ลบรายการ",err:"เกิดข้อผิดพลาด",forbidden:"ไม่มีสิทธิ์",no_consent:"พนักงานยังไม่ได้ยินยอม",busy:"ระบบไม่ว่าง ลองอีกครั้ง",signedAt:"ลงนามเมื่อ",gpsWait:"กำลังหาพิกัด GPS…",camGas:"เปิดผ่าน Apps Script: Google ไม่อนุญาตกล้อง live — ใช้ปุ่ม ถ่ายรูปสแกน หรือเปิดจาก GitHub Pages",camDenied:"เบราว์เซอร์ถูกปิดสิทธิ์กล้อง — แตะไอคอนแม่กุญแจข้างที่อยู่เว็บ › กล้อง › อนุญาต แล้วรีเฟรช",camBusy:"กล้องถูกใช้งานโดยโปรแกรมอื่น (เช่น Teams) — ปิดโปรแกรมนั้นแล้วลองใหม่",camNone:"ไม่พบกล้องในเครื่องนี้",gpsOff:"ไม่ได้เปิด GPS (บันทึกเฉพาะ Location)"},
+ editRec:"แก้ไขบันทึกเวลา",emp:"พนักงาน",wd:"วันทำงาน",delRec:"ลบรายการ",err:"เกิดข้อผิดพลาด",forbidden:"ไม่มีสิทธิ์",no_consent:"พนักงานยังไม่ได้ยินยอม",busy:"ระบบไม่ว่าง ลองอีกครั้ง",signedAt:"ลงนามเมื่อ",gpsWait:"กำลังหาพิกัด GPS…",flip:"สลับกล้อง",ok:"ตกลง",saving:"กำลังบันทึก…",cfInT:"ลงเวลาเข้างานแล้ว",cfOutT:"ลงเวลาออกงานแล้ว",cfDupT:"ลงเวลาไปแล้ว",cfFailT:"ยังไม่ได้ลงเวลา",cfSaved:"บันทึกลงระบบเรียบร้อย",cfRetry:"กรุณาสแกนใหม่",camGas:"เปิดผ่าน Apps Script: Google ไม่อนุญาตกล้อง live — ใช้ปุ่ม ถ่ายรูปสแกน หรือเปิดจาก GitHub Pages",camDenied:"เบราว์เซอร์ถูกปิดสิทธิ์กล้อง — แตะไอคอนแม่กุญแจข้างที่อยู่เว็บ › กล้อง › อนุญาต แล้วรีเฟรช",camBusy:"กล้องถูกใช้งานโดยโปรแกรมอื่น (เช่น Teams) — ปิดโปรแกรมนั้นแล้วลองใหม่",camNone:"ไม่พบกล้องในเครื่องนี้",gpsOff:"ไม่ได้เปิด GPS (บันทึกเฉพาะ Location)"},
 en:{appTitle:"Face Clocking System",barTitle:"Face Clocking",pinPh:"PIN",remember:"Remember on this device (for a leader's kiosk)",signIn:"Sign in",tryDemo:"Try demo mode (sample data)",
  badPin:"Wrong PIN",notConfigured:"AdminPIN isn't set in the SETTINGS sheet",noApi:"API_URL isn't set in the file. Demo mode still works.",netErr:"Can't reach the server. Check the connection.",
  editOn:"Edit Mode is on",demoBar:"DEMO mode · sample data stays on this device only",
@@ -514,7 +541,7 @@ en:{appTitle:"Face Clocking System",barTitle:"Face Clocking",pinPh:"PIN",remembe
  brand:"Logo and site",siteName:"Site name",logoUrl:"Logo link",logoFile:"Use a logo image file",consentAdm:"Consent text",consentRev:"Have HR or the DPO review before go-live. Change the version whenever you edit it. Blank uses the standard text.",saveSet:"Save settings",
  editEmp:"Edit employee",active:"Active",faceAdd:"Add / replace face photos",withdraw:"Withdraw consent (delete face)",delEmp:"Delete employee",viewSig:"View signature",signNow:"Sign consent",
  cfWithdraw:"Delete this employee's face photos and template? They can't scan until they sign again and add photos.",cfDel:"Delete this employee and all personal data? Past time records are kept.",
- editRec:"Edit time record",emp:"Employee",wd:"Work date",delRec:"Delete record",err:"Something went wrong",forbidden:"Not allowed",no_consent:"Employee hasn't consented yet",busy:"Server busy, try again",signedAt:"Signed",gpsWait:"Getting GPS…",camGas:"Opened from Apps Script, where Google blocks the live camera. Use Photo scan, or open from GitHub Pages.",camDenied:"Camera permission is blocked. Tap the lock icon by the address bar › Camera › Allow, then reload.",camBusy:"Another app (e.g. Teams) is using the camera. Close it and try again.",camNone:"No camera found on this device.",gpsOff:"GPS off (location only)"}
+ editRec:"Edit time record",emp:"Employee",wd:"Work date",delRec:"Delete record",err:"Something went wrong",forbidden:"Not allowed",no_consent:"Employee hasn't consented yet",busy:"Server busy, try again",signedAt:"Signed",gpsWait:"Getting GPS…",flip:"Switch",ok:"OK",saving:"Saving…",cfInT:"Clocked in",cfOutT:"Clocked out",cfDupT:"Already clocked",cfFailT:"Not clocked",cfSaved:"Saved to the system",cfRetry:"Please scan again",camGas:"Opened from Apps Script, where Google blocks the live camera. Use Photo scan, or open from GitHub Pages.",camDenied:"Camera permission is blocked. Tap the lock icon by the address bar › Camera › Allow, then reload.",camBusy:"Another app (e.g. Teams) is using the camera. Close it and try again.",camNone:"No camera found on this device.",gpsOff:"GPS off (location only)"}
 };
 const LS = { get(k){ try{return localStorage.getItem(k)}catch(e){return null} }, set(k,v){ try{ v==null?localStorage.removeItem(k):localStorage.setItem(k,v) }catch(e){} } };
 let lang = LS.get('fc-lang') || 'th';
@@ -746,11 +773,33 @@ function renderClock(){
 $('#locChips').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; S.loc=b.dataset.id; LS.set('fc-loc',S.loc); renderClock(); });
 $('#shiftChips').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b||b.disabled) return; S.shift=b.dataset.id; renderClock(); loadFeed(); });
 $('#modeSeg').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; S.mode=b.dataset.m; renderClock(); });
-$('#camBtn').addEventListener('click', ()=> camState.on ? stopCam() : startCam());
+const CAM={facing:LS.get('fc-facing')||'user', devs:[], idx:-1};
+async function listCams(){ try{ CAM.devs=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput'); }catch(e){ CAM.devs=[]; } return CAM.devs; }
+async function openCam(){
+  const base={width:{ideal:640},height:{ideal:480}};
+  let st;
+  if(CAM.idx>=0 && CAM.devs[CAM.idx]) st=await navigator.mediaDevices.getUserMedia({video:Object.assign({deviceId:{exact:CAM.devs[CAM.idx].deviceId}},base),audio:false});
+  else{ try{ st=await navigator.mediaDevices.getUserMedia({video:Object.assign({facingMode:{exact:CAM.facing}},base),audio:false}); }
+        catch(e){ if(e.name==='NotAllowedError') throw e; st=await navigator.mediaDevices.getUserMedia({video:Object.assign({facingMode:CAM.facing},base),audio:false}); } }
+  const tr=st.getVideoTracks()[0], fm=tr&&tr.getSettings?tr.getSettings().facingMode:null;
+  CAM.rear = fm ? fm==='environment' : (CAM.idx>=0 ? /back|rear|environment|หลัง/i.test(CAM.devs[CAM.idx].label) : CAM.facing==='environment');
+  await listCams(); return st;
+}
+function nextCam(){
+  if(CAM.devs.length>2){ // desktop / phones exposing several lenses: cycle devices
+    const cur=CAM.idx; CAM.idx=(cur+1)%CAM.devs.length; return; }
+  CAM.idx=-1; CAM.facing = CAM.facing==='user'?'environment':'user'; LS.set('fc-facing',CAM.facing);
+}
+function applyCamUI(box,btn){ box.classList.toggle('rear',!!CAM.rear); btn.hidden = CAM.devs.length<2; }
+$('#flipBtn').addEventListener('click', async e=>{ e.stopPropagation(); if(!camState.on) return; nextCam(); stopTracks(camState.stream); try{ camState.stream=await openCam(); const v=$('#video'); v.srcObject=camState.stream; await v.play(); applyCamUI($('#cam'),$('#flipBtn')); camState.last={id:null,n:0}; }catch(x){ stopCam(); $('#camOff').hidden=false; $('#camOff').textContent=camErr(x); } });
+$('#regFlip').addEventListener('click', async e=>{ e.stopPropagation(); if(!R.stream) return; nextCam(); stopTracks(R.stream); try{ R.stream=await openCam(); const v=$('#regVideo'); v.srcObject=R.stream; await v.play(); applyCamUI($('#regCam'),$('#regFlip')); }catch(x){ R.stream=null; $('#shotMsg').textContent=camErr(x); renderRegister(); } });
+const stopTracks = st => { if(st) st.getTracks().forEach(tr=>tr.stop()); };
+$('#camBtn').addEventListener('click', ()=>{ unlockAudio(); camState.on ? stopCam() : startCam(); });
+$('#photoBtn').addEventListener('click', unlockAudio);
 async function startCam(){
   try{
-    camState.stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false});
-    const v=$('#video'); v.srcObject=camState.stream; await v.play(); camState.on=true; renderClock(); $('#camHint').textContent=t('lookCam'); loop();
+    camState.stream = await openCam();
+    const v=$('#video'); v.srcObject=camState.stream; await v.play(); camState.on=true; renderClock(); applyCamUI($('#cam'),$('#flipBtn')); $('#camHint').textContent=t('lookCam'); loop();
   }catch(e){ console.warn(e); camState.on=false; $('#camOff').hidden=false; $('#camOff').textContent=camErr(e); $('#camBtn').disabled=true; }
 }
 function camErr(e){
@@ -761,10 +810,10 @@ function camErr(e){
   if(e && e.name==='NotFoundError') return t('camNone');
   return t('camNo');
 }
-function stopCam(){ clearTimeout(camState.timer); if(camState.stream) camState.stream.getTracks().forEach(tr=>tr.stop()); camState.stream=null; camState.on=false; $('#cam').classList.remove('hit'); if(S.cfg) renderClock(); }
+function stopCam(){ $('#flipBtn').hidden=true; clearTimeout(camState.timer); if(camState.stream) camState.stream.getTracks().forEach(tr=>tr.stop()); camState.stream=null; camState.on=false; $('#cam').classList.remove('hit'); if(S.cfg) renderClock(); }
 async function loop(){
   if(!camState.on) return;
-  if(!camState.busy && S.tab==='clock' && !document.hidden){
+  if(!camState.busy && S.tab==='clock' && !document.hidden && !CF.open){
     camState.busy=true;
     try{
       const v=$('#video'); const d=await detect(v);
@@ -777,7 +826,9 @@ async function loop(){
           camState.last = camState.last.id===m.id ? {id:m.id,n:camState.last.n+1} : {id:m.id,n:1};
           $('#camHint').textContent = empName(m.id);
           if(camState.last.n>=2){
-            if(Date.now()-(camState.recent[m.id]||0) < 60e3){ $('#camHint').textContent=empName(m.id)+' · '+t('already'); }
+            if(Date.now()-(camState.recent[m.id]||0) < 60e3){ $('#camHint').textContent=empName(m.id)+' · '+t('already');
+              if(!camState.dupShown||camState.dupShown[m.id]!==camState.recent[m.id]){ camState.dupShown=camState.dupShown||{}; camState.dupShown[m.id]=camState.recent[m.id]; const r=camState.lastRec&&camState.lastRec[m.id];
+                showCF('dup',{title:t('cfDupT'),time:r?r.time:'',name:empName(m.id),id:m.id,photo:S.faces[m.id]&&S.faces[m.id].photo,note:r?`${t(r.action==='in'?'cIn':'cOut')} ${r.time} · ${r.loc}`:t('already')}); beep('dup'); camState.last={id:null,n:0}; } }
             else{ camState.recent[m.id]=Date.now(); camState.last={id:null,n:0}; await doClock(m.id,m.dist); }
           }
         }
@@ -791,14 +842,39 @@ $('#scanFile').addEventListener('change', async e=>{
   const f=e.target.files[0]; e.target.value=''; if(!f) return;
   $('#scanResult').innerHTML=`<div class="small muted">${esc(t('mLoad'))}</div>`;
   try{ const c=await fileCanvas(f); const d=await detect(c);
-    if(!d){ $('#scanResult').innerHTML=card('fail',null,t('noFace')); return; }
-    if(!Object.keys(S.faces).length){ $('#scanResult').innerHTML=card('fail',null,t('noFaces')); return; }
-    const m=bestMatch(d.descriptor); if(!m||m.dist>(+S.cfg.threshold||.5)){ $('#scanResult').innerHTML=card('fail',thumb(c,d.detection.box),t('noMatch')); return; }
+    if(!d){ $('#scanResult').innerHTML=card('fail',null,t('noFace')); beep('fail'); showCF('fail',{title:t('cfFailT'),note:t('noFace')}); return; }
+    if(!Object.keys(S.faces).length){ $('#scanResult').innerHTML=card('fail',null,t('noFaces')); showCF('fail',{title:t('cfFailT'),note:t('noFaces')}); return; }
+    const m=bestMatch(d.descriptor); if(!m||m.dist>(+S.cfg.threshold||.5)){ const ph=thumb(c,d.detection.box); $('#scanResult').innerHTML=card('fail',ph,t('noMatch')); beep('fail'); showCF('fail',{title:t('cfFailT'),photo:ph,name:' ',note:t('noMatch')}); return; }
     await doClock(m.id,m.dist);
   }catch(err){ console.error(err); $('#scanResult').innerHTML=card('fail',null,errText(err)); }
 });
 function card(kind,photo,title,sub=''){ return `<div class="result ${kind}">${photo?`<img class="ph" src="${photo}" alt="">`:'<span class="ph"></span>'}<div style="min-width:0"><div class="act">${esc(title)}</div>${sub}</div></div>`; }
-function beep(ok){ try{ const a=new (window.AudioContext||window.webkitAudioContext)(); const o=a.createOscillator(), g=a.createGain(); o.frequency.value=ok?880:300; g.gain.value=.08; o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+.18); }catch(e){} }
+let AC=null; function unlockAudio(){ try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended') AC.resume(); }catch(e){} }
+function tone(f,at,dur){ const o=AC.createOscillator(), g=AC.createGain(); o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(.0001,AC.currentTime+at); g.gain.exponentialRampToValueAtTime(.18,AC.currentTime+at+.02); g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+at+dur); o.connect(g); g.connect(AC.destination); o.start(AC.currentTime+at); o.stop(AC.currentTime+at+dur+.02); }
+function beep(kind){ try{ unlockAudio(); if(!AC) return;
+  if(kind==='in'){ tone(880,0,.14); tone(1320,.15,.22); } else if(kind==='out'){ tone(1320,0,.14); tone(880,.15,.22); } else { tone(330,0,.18); tone(330,.24,.18); } }catch(e){}
+  try{ navigator.vibrate && navigator.vibrate(kind==='in'||kind==='out'?[60,60,120]:[200,80,200]); }catch(e){} }
+const CF={timer:null,open:false};
+const CF_ICON={in:'<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>',
+  out:'<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>',
+  dup:'<circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>',
+  fail:'<path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>',
+  wait:'<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="36 20" style="transform-origin:center;animation:spin 1s linear infinite"/>'};
+function showCF(kind,o){
+  clearTimeout(CF.timer); CF.open=true; const el=$('#cf'); el.className='cf '+kind; el.hidden=false;
+  const secs = kind==='wait'?0 : kind==='fail'?4 : 5;
+  el.innerHTML=`<div class="box" role="alertdialog" aria-live="assertive"><div class="top"><div class="ico"><svg viewBox="0 0 24 24">${CF_ICON[kind]}</svg></div><div class="ttl">${esc(o.title)}</div>${o.time?`<div class="tm">${esc(o.time)}</div>`:''}${o.date?`<div style="opacity:.85;font-size:14px">${esc(o.date)}</div>`:''}</div>
+   <div class="body">${o.name?`<div class="who">${o.photo?`<img src="${o.photo}" alt="">`:'<span class="ph"></span>'}<div style="min-width:0"><b>${esc(o.name)}</b><span class="mono small muted">${esc(o.id||'')}</span></div></div>`:''}
+   ${o.meta&&o.meta.length?`<div class="meta">${o.meta.join('')}</div>`:''}${o.note?`<div class="small muted">${esc(o.note)}</div>`:''}
+   ${secs?`<div class="bar"><i style="animation:cfbar ${secs}s linear forwards"></i></div>`:''}
+   ${kind!=='wait'?`<div class="acts" style="${o.undo?'':'grid-template-columns:1fr'}">${o.undo?`<button class="btn" id="cfUndo">${esc(t('undo'))}</button>`:''}<button class="btn pri lg" id="cfOk">${esc(t('ok'))}</button></div>`:''}</div></div>`;
+  if($('#cfOk')) $('#cfOk').onclick=hideCF;
+  if(o.undo && $('#cfUndo')) $('#cfUndo').onclick=async()=>{ clearTimeout(CF.timer); $('#cfUndo').disabled=true; await o.undo(); hideCF(); };
+  if(secs) CF.timer=setTimeout(hideCF, secs*1000);
+}
+function hideCF(){ clearTimeout(CF.timer); CF.open=false; $('#cf').hidden=true; $('#cf').innerHTML=''; }
+$('#cf').addEventListener('click', e=>{ if(e.target.id==='cf' && !$('#cf').classList.contains('wait')) hideCF(); });
+const dateTxt = d => d.toLocaleDateString(lang==='th'?'th-TH':'en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
 const GEO={v:'',at:0,denied:false};
 function refreshGPS(){ if(GEO.denied||!navigator.geolocation) return; if(Date.now()-GEO.at<120e3) return;
   navigator.geolocation.getCurrentPosition(p=>{ GEO.v=p.coords.latitude.toFixed(6)+','+p.coords.longitude.toFixed(6)+(p.coords.accuracy?' ±'+Math.round(p.coords.accuracy)+'m':''); GEO.at=Date.now(); renderGeo(); },
@@ -806,17 +882,27 @@ function refreshGPS(){ if(GEO.denied||!navigator.geolocation) return; if(Date.no
 function renderGeo(){ const b=$('#geoBadge'); if(!b) return; b.className='badge '+(GEO.v?'g':GEO.denied?'w':''); b.textContent=GEO.v?('GPS '+GEO.v):(GEO.denied?t('gpsOff'):t('gpsWait')); }
 async function doClock(id, d){
   const score=+(1-d).toFixed(3); refreshGPS();
+  showCF('wait',{title:t('saving'),name:empName(id),id,photo:S.faces[id]&&S.faces[id].photo});
   try{
     const r=await call('clock',{empId:id,shift:S.shift,loc:S.loc,mode:S.mode,score,gps:GEO.v});
     const ph=S.faces[id]&&S.faces[id].photo;
-    if(r.action==='dup'){ $('#scanResult').innerHTML=card('dup',ph,t('cDup'),`<div>${esc(empName(id))}</div>`); beep(false); return; }
+    if(r.action==='dup'){ const pt=new Date(r.rec.out||r.rec.in); const tt=pad(pt.getHours())+':'+pad(pt.getMinutes());
+      $('#scanResult').innerHTML=card('dup',ph,t('cDup'),`<div>${esc(empName(id))} · <span class="mono">${tt}</span></div>`);
+      showCF('dup',{title:t('cfDupT'),time:tt,name:empName(id),id,photo:ph,note:`${t(r.rec.out?'cOut':'cIn')} ${tt} · ${nm(locBy(r.rec.out?(r.rec.outLoc||r.rec.loc):r.rec.loc))}`}); beep('dup'); return; }
     const c=r.rec&&r.rec.in?calc(r.rec):null; const ts=new Date(r.action==='in'?r.rec.in:r.rec.out);
     const late = r.action==='in'&&c&&c.late>0 ? ` <span class="badge w">${esc(t('late'))} ${c.late} ${esc(t('min'))}</span>` : '';
     const sub=`<div style="font-weight:600">${esc(empName(id))}</div><div class="small muted"><span class="mono">${esc(id)}</span> · ${esc(nm(locBy(r.action==='out'?(r.rec.outLoc||r.rec.loc):r.rec.loc)))} · ${esc(nm(shiftBy(r.rec.shift)))}</div><div class="small"><span class="mono">${pad(ts.getHours())}:${pad(ts.getMinutes())}</span> · ${esc(t('match'))} ${Math.round(score*100)}%${late}</div><button class="btn" id="undoBtn" style="margin-top:8px;min-height:36px;padding:4px 12px">${esc(t('undo'))}</button>`;
-    $('#scanResult').innerHTML=card(r.action,ph,t(r.action==='in'?'cIn':'cOut'),sub); beep(true);
-    $('#undoBtn').onclick=async()=>{ try{ await call('undo',{key:r.rec.key||(r.wd+'|'+id),prev:r.prev}); $('#scanResult').innerHTML=''; delete camState.recent[id]; toast(t('undone')); loadFeed(); }catch(e){ toast(errText(e)); } };
+    $('#scanResult').innerHTML=card(r.action,ph,t(r.action==='in'?'cIn':'cOut'),sub); beep(r.action);
+    const doUndo=async()=>{ try{ await call('undo',{key:r.rec.key||(r.wd+'|'+id),prev:r.prev}); $('#scanResult').innerHTML=''; delete camState.recent[id]; toast(t('undone')); loadFeed(); }catch(e){ toast(errText(e)); } };
+    $('#undoBtn').onclick=doUndo;
+    const tt=pad(ts.getHours())+':'+pad(ts.getMinutes()); const lname=nm(locBy(r.action==='out'?(r.rec.outLoc||r.rec.loc):r.rec.loc));
+    camState.recent[id]=Date.now(); camState.lastRec=camState.lastRec||{}; camState.lastRec[id]={action:r.action,time:tt,loc:lname};
+    const meta=[`<span class="badge">${esc(lname)}</span>`,`<span class="badge">${esc(nm(shiftBy(r.rec.shift)))}</span>`];
+    if(r.action==='in'&&c&&c.late>0) meta.push(`<span class="badge w">${esc(t('late'))} ${c.late} ${esc(t('min'))}</span>`);
+    if(r.action==='out'&&c&&!c.open){ meta.push(`<span class="badge i">${esc(t('normal'))} ${hrs(c.normal)}</span>`); if(c.otMin) meta.push(`<span class="badge i">OT ${hrs(c.otMin)}</span>`); }
+    showCF(r.action,{title:t(r.action==='in'?'cfInT':'cfOutT'),time:tt,date:dateTxt(ts),name:empName(id),id,photo:ph,meta,note:t('cfSaved'),undo:doUndo});
     loadFeed();
-  }catch(e){ $('#scanResult').innerHTML=card('fail',null,errText(e)); beep(false); }
+  }catch(e){ $('#scanResult').innerHTML=card('fail',null,errText(e)); delete camState.recent[id]; beep('fail'); showCF('fail',{title:t('cfFailT'),name:empName(id),id,note:errText(e)+' · '+t('cfRetry')}); }
 }
 async function loadFeed(){
   if(!S.shift||rank(S.role)<2) return; const wd=workDateFor(shiftBy(S.shift),new Date()); S.feedWd=wd;
@@ -866,7 +952,7 @@ $('#sigCv').addEventListener('pointermove', e=>{ if(!R.sig.down) return; const [
 ['pointerup','pointercancel'].forEach(ev=>$('#sigCv').addEventListener(ev,()=>R.sig.down=false));
 $('#sigClr').addEventListener('click', ()=>{ if(R.sig.x){ R.sig.x.clearRect(0,0,R.sig.c.width,R.sig.c.height); } R.sig.drawn=false; });
 function sigData(){ const o=document.createElement('canvas'); o.width=360; o.height=120; const x=o.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,360,120); x.drawImage(R.sig.c,0,0,360,120); return o.toDataURL('image/jpeg',.6); }
-async function startRegCam(){ if(!hasCam()||R.stream) return; try{ R.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640}},audio:false}); const v=$('#regVideo'); v.srcObject=R.stream; await v.play(); }catch(e){ R.stream=null; $('#shotMsg').textContent=camErr(e); } renderRegister(); }
+async function startRegCam(){ if(!hasCam()||R.stream) return; try{ R.stream=await openCam(); const v=$('#regVideo'); v.srcObject=R.stream; await v.play(); setTimeout(()=>applyCamUI($('#regCam'),$('#regFlip')),0); }catch(e){ R.stream=null; $('#shotMsg').textContent=camErr(e); } renderRegister(); }
 function stopRegCam(){ if(R.stream) R.stream.getTracks().forEach(tr=>tr.stop()); R.stream=null; renderRegister(); }
 async function addShot(src){
   $('#shotMsg').textContent=t('mLoad');
