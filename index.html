@@ -6,14 +6,14 @@
 <meta name="theme-color" content="#0b2a5b">
 <title>Face Clocking System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
 /* Light, mobile-first: navy app bar, white cards on cool grey, thumb-reach bottom nav (top rail on desktop) */
 :root{
   --bg:#f2f5f9; --card:#ffffff; --line:#dbe2ec; --line2:#c7d1df; --fg:#0f1e36; --muted:#5a6a83;
   --navy:#0b2a5b; --navy2:#123a7a; --blue:#0a84c9; --blue-bg:#e6f3fb;
   --good:#11845b; --good-bg:#e4f5ee; --warn:#a96300; --warn-bg:#fdf1dc; --bad:#c23434; --bad-bg:#fbe7e7;
-  --f:"IBM Plex Sans Thai",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
+  --f:"Noto Sans","Noto Sans Thai","Leelawadee UI","Thonburi",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   --nav-h:64px; color-scheme:light;
 }
@@ -93,6 +93,7 @@ input:disabled,select:disabled,textarea:disabled{background:var(--bg);color:var(
 .btn.lg{min-height:58px;font-size:18px;border-radius:14px}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .empty{border:1.5px dashed var(--line2);border-radius:12px;padding:20px;text-align:center;color:var(--muted)}
+.badge:empty{display:none}
 .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap;background:var(--bg);color:var(--muted)}
 .badge.g{background:var(--good-bg);color:var(--good)} .badge.w{background:var(--warn-bg);color:var(--warn)} .badge.b{background:var(--bad-bg);color:var(--bad)} .badge.i{background:var(--blue-bg);color:var(--blue)}
 /* login */
@@ -194,6 +195,7 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--blue-bg)}
 .cf{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:max(20px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));background:rgba(9,20,40,.55)}
 .cf .box{width:min(420px,100%);background:#fff;border-radius:22px;overflow:hidden;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .cf .top{padding:22px 20px 18px;color:#fff;display:grid;justify-items:center;gap:6px}
+.cf.queue .top{background:#5b6b86} .cf.queue .bar i{color:#5b6b86}
 .cf.in .top{background:var(--good)} .cf.out .top{background:var(--blue)} .cf.dup .top{background:#c98a10} .cf.fail .top{background:var(--bad)} .cf.wait .top{background:var(--navy)}
 .cf .ico{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center}
 .cf .ico svg{width:44px;height:44px}
@@ -217,23 +219,139 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--blue-bg)}
 .prog{height:8px;border-radius:9px;background:var(--line);overflow:hidden}
 .prog i{display:block;height:100%;background:var(--blue);width:0}
 @media(prefers-reduced-motion:no-preference){.result{animation:pop .25s ease-out}@keyframes pop{from{transform:scale(.97);opacity:.5}to{transform:none;opacity:1}}}
+
+/* ===== v1.2 professional layer ===== */
+:root{--bg:#eef2f7;--shadow:0 1px 2px rgba(15,30,54,.06),0 4px 14px rgba(15,30,54,.04)}
+.card{border-color:#e1e7ef;box-shadow:var(--shadow)}
+.card h2{letter-spacing:-.005em}
+.ch{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.ch h2{margin:0}
+.count{display:inline-grid;place-items:center;min-width:24px;height:22px;padding:0 7px;border-radius:99px;background:var(--bg);color:var(--muted);font-size:12px;font-family:var(--mono);vertical-align:2px}
+.btn.sm{min-height:36px;padding:6px 12px;font-size:13px;border-radius:9px}
+.logo.sm{height:30px;min-width:30px;font-size:12px;border-radius:7px}
+.logo.sm img{height:24px}
+.syncchip{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;background:#f6b73c;color:#3d2600;white-space:nowrap}
+.subseg{background:#fff;box-shadow:var(--shadow);border-color:#e1e7ef}
+/* login */
+.login{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;padding:0 0 24px;min-height:100vh}
+.lhero{width:100%;background:var(--navy);background-image:radial-gradient(120% 90% at 85% 0%,#1d4f9a 0%,rgba(29,79,154,0) 60%);color:#fff;text-align:center;padding:calc(36px + env(safe-area-inset-top)) 20px 64px;display:grid;justify-items:center;gap:10px}
+.lhero h1{margin:4px 0 0;font-size:24px;font-weight:700;letter-spacing:-.01em}
+.lsite{opacity:.75;font-size:14px;min-height:1.2em}
+.logo.xl{width:76px;height:76px;border-radius:20px;background:#fff;color:var(--navy);font-size:24px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.logo.xl img{height:60px}
+.login .box{margin-top:-40px;background:#fff;border-radius:20px;box-shadow:0 10px 40px rgba(15,30,54,.12);padding:20px;width:min(400px,calc(100% - 32px));gap:14px}
+.pinlbl{font-size:14px;color:var(--muted);font-weight:500}
+.dots{display:flex;justify-content:center;gap:12px;min-height:22px;cursor:text}
+.dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--line2);transition:all .12s}
+.dots i.on{background:var(--navy);border-color:var(--navy);transform:scale(1.05)}
+.login .pin{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.keypad button{background:#f6f8fb;border-color:#e6ebf2}
+.lfoot{margin-top:18px;font-size:12px;color:var(--muted)}
+/* overview */
+.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:2px 2px 0}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hdate{font-size:22px;font-weight:700;color:var(--navy);line-height:1.2}
+.hright{display:flex;align-items:center;gap:10px}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 0 0 rgba(17,132,91,.5);animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(17,132,91,.45)}70%{box-shadow:0 0 0 8px rgba(17,132,91,0)}100%{box-shadow:0 0 0 0 rgba(17,132,91,0)}}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media(min-width:760px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.stat{background:#fff;border:1px solid #e1e7ef;border-radius:14px;padding:14px;box-shadow:var(--shadow);display:grid;gap:6px;min-width:0}
+.stat .sh{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);font-weight:500}
+.stat .si{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;flex:none}
+.stat .si svg{width:17px;height:17px}
+.stat b{font-family:var(--mono);font-size:30px;line-height:1;color:var(--fg);font-variant-numeric:tabular-nums}
+.stat small{font-size:12px;color:var(--muted)}
+.stat.g .si{background:var(--good-bg);color:var(--good)} .stat.b .si{background:var(--blue-bg);color:var(--blue)}
+.stat.w .si{background:var(--warn-bg);color:var(--warn)} .stat.r .si{background:var(--bad-bg);color:var(--bad)}
+.locrow{display:grid;gap:6px;padding:10px 0;border-bottom:1px solid var(--line)}
+.locrow:last-child{border-bottom:0}
+.locrow .lt{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:14px}
+.locrow .lt span:last-child{font-family:var(--mono);font-weight:500;color:var(--muted);font-size:13px}
+.sbar{display:flex;height:10px;border-radius:9px;overflow:hidden;background:var(--bg)}
+.sbar i{display:block;height:100%}
+.sbar .a{background:var(--good)} .sbar .d{background:var(--blue)}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:-1px;background:var(--c)}
+.mini{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;border-radius:10px;background:var(--bg)}
+.mini .thumb{width:36px;height:36px}
+/* clock context */
+.ctxsum{display:flex;align-items:center;gap:12px}
+.ctxsum .pin{width:42px;height:42px;border-radius:12px;background:var(--blue-bg);color:var(--navy);display:grid;place-items:center;flex:none}
+.ctxsum .pin svg{width:22px;height:22px}
+.ctxloc{font-weight:700;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ctxpick{display:grid;gap:14px}
+.camcard{display:grid;gap:12px}
+.camfoot{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.clockline{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.clockline .bigtime{font-size:30px}
+@media(max-width:600px){.cam{aspect-ratio:4/5}}
+.mode-pill{position:absolute;top:10px;left:10px;z-index:2;height:32px;display:flex;align-items:center;padding:0 12px;border-radius:99px;font-size:12px;font-weight:700;letter-spacing:.04em;color:#fff;background:rgba(0,0,0,.5)}
+.mode-pill.in{background:var(--good)} .mode-pill.out{background:var(--blue)}
+.cam .hint{font-size:15px;text-align:center;padding:16px 14px 14px}
+.cam.far .frame{border-color:#f6b73c}
+.hud{display:none}
+/* kiosk */
+body.kiosk{overflow:hidden}
+body.kiosk .bar,body.kiosk nav.bn,body.kiosk .toast{display:none}
+body.kiosk #cam{position:fixed;inset:0;z-index:40;border-radius:0;aspect-ratio:auto;max-width:none;background:#000}
+body.kiosk .hud{display:flex;position:absolute;left:0;right:0;top:0;z-index:3;justify-content:space-between;align-items:flex-start;gap:12px;padding:calc(14px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 30px max(16px,env(safe-area-inset-left));background:linear-gradient(rgba(0,0,0,.6),transparent);color:#fff}
+.hud-l{display:flex;align-items:center;gap:12px;min-width:0}
+.hud-t{font-family:var(--mono);font-size:30px;font-weight:600;line-height:1}
+.hud-s{font-size:13px;opacity:.85;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60vw}
+.hud-x{height:36px;padding:0 14px;border-radius:99px;border:1px solid rgba(255,255,255,.45);background:rgba(0,0,0,.3);color:#fff;font-weight:600;font-size:13px;cursor:pointer}
+body.kiosk .cam .hint{font-size:22px;font-weight:600;padding:40px 20px calc(36px + env(safe-area-inset-bottom))}
+body.kiosk .flip{top:auto;bottom:calc(96px + env(safe-area-inset-bottom));right:16px}
+body.kiosk .mode-pill{top:auto;bottom:calc(100px + env(safe-area-inset-bottom));left:16px}
+body.kiosk .frame{inset:18% 24% 26%}
+@media(min-width:900px){body.kiosk .frame{inset:16% 36% 22%}}
+
+.phead{padding:2px 2px 0}
+.phead h2{margin:0;font-size:22px;font-weight:700;color:var(--navy);line-height:1.25}
+.phead p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.psum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.psum div{background:var(--bg);border-radius:10px;padding:8px 10px;display:grid;min-width:0}
+.psum b{font-family:var(--mono);font-size:20px;color:var(--navy);line-height:1.2}
+.psum span{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.about{display:flex;gap:12px;align-items:center;font-size:12px;color:var(--muted);padding:8px 4px}
+.about b{color:var(--fg)}
+.pitem{box-shadow:none;transition:border-color .15s}
+.pitem:hover{border-color:var(--line2)}
+.chips button{transition:border-color .15s,background .15s}
+.btn{transition:background .15s,border-color .15s,transform .05s}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn.pri:hover:not(:disabled){background:var(--navy2)}
+.btn.blue:hover:not(:disabled){background:#0975b3}
+.tbl{box-shadow:none}
+th{text-transform:none;letter-spacing:.01em}
+tbody tr:nth-child(even) td{background:#fafbfd}
+.btnrow{display:flex;gap:10px}
+.btnrow .btn{flex:1}
+@media(max-width:600px){.kpis .kpi:last-child:nth-child(odd){grid-column:1/-1}}
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
 <div class="login" id="login">
+  <div class="lhero">
+    <div class="logo xl" id="loginLogo">ZF</div>
+    <h1 data-t="appTitle">Face Clocking</h1>
+    <div class="lsite" id="loginSite"></div>
+  </div>
   <div class="box">
-    <div class="logo" id="loginLogo">ZF</div>
-    <div><h1 data-t="appTitle">Face Clocking</h1><div class="muted" id="loginSite"></div></div>
     <div class="lang" style="justify-self:center;border-color:var(--line2)" id="langLogin"><button data-lang="th" style="color:var(--navy)">TH</button><button data-lang="en" style="color:var(--navy)">EN</button></div>
+    <div class="pinlbl" data-t="pinEnter">Enter your PIN</div>
+    <div class="dots" id="pinDots"></div>
     <input type="password" inputmode="numeric" autocomplete="off" class="pin" id="pinIn" maxlength="12" data-tp="pinPh">
     <div class="keypad" id="keypad"></div>
     <label class="check"><input type="checkbox" id="rememberPin"><span data-t="remember">Remember on this device</span></label>
     <button class="btn pri lg block" id="loginBtn" data-t="signIn">Sign in</button>
-    <div class="small" id="loginMsg" style="color:var(--bad)"></div>
+    <div class="small" id="loginMsg" style="color:var(--bad);min-height:1.2em"></div>
     <button class="btn ghost" id="demoBtn" data-t="tryDemo">Try demo</button>
   </div>
+  <div class="lfoot">Face Clocking System · v1.2</div>
 </div>
 
 <!-- APP -->
@@ -242,7 +360,7 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--blue-bg)}
     <div class="in gut">
       <div class="logo" id="logo">ZF</div>
       <div class="sp"><h1 data-t="barTitle">Face Clocking</h1><small id="siteName"></small></div>
-      <span class="rolechip" id="roleChip"></span>
+      <span class="syncchip" id="syncChip" hidden></span><span class="rolechip" id="roleChip"></span>
       <div class="lang" id="langApp"><button data-lang="th">TH</button><button data-lang="en">EN</button></div>
       <button class="iconbtn" id="editBtn" hidden aria-label="Edit mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
       <button class="iconbtn" id="logoutBtn" aria-label="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5M5 12h11"/></svg></button>
@@ -253,27 +371,59 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--blue-bg)}
   <nav class="bn" id="nav"></nav>
 
   <main class="gut">
-    <!-- CLOCK -->
-    <section class="view" id="v-clock" hidden>
-      <div class="card clockhead">
-        <div><div class="bigtime" id="bigTime">--:--</div><div class="muted small" id="bigDate"></div></div>
-        <div style="display:grid;gap:4px;justify-items:end"><span class="badge" id="modelBadge"></span><span class="badge" id="geoBadge"></span></div>
+    <!-- OVERVIEW -->
+    <section class="view" id="v-home" hidden>
+      <div class="hero">
+        <div><div class="eyebrow" data-t="hToday">Today</div><div class="hdate" id="hDate"></div></div>
+        <div class="hright"><span class="live"><i></i><span id="hSync"></span></span><button class="btn sm" id="hRefresh" data-t="refresh">Refresh</button></div>
+      </div>
+      <div class="stats" id="hStats"></div>
+      <div class="cols">
+        <div class="card"><div class="ch"><h2 data-t="hByLoc">By location</h2></div><div id="hLoc"></div></div>
+        <div class="card"><div class="ch"><h2 data-t="hLatest">Latest scans</h2></div><div class="feed" id="hFeed"></div></div>
       </div>
       <div class="cols">
-        <div class="card" style="display:grid;gap:14px">
+        <div class="card"><div class="ch"><h2><span data-t="hNotIn">Not clocked in</span> <span class="count" id="hNotInN"></span></h2></div><div class="plist" id="hNotIn"></div></div>
+        <div class="card"><div class="ch"><h2><span data-t="hOpen">Missing clock-out</span> <span class="count" id="hOpenN"></span></h2></div><div class="plist" id="hOpen"></div></div>
+      </div>
+    </section>
+
+    <!-- CLOCK -->
+    <section class="view" id="v-clock" hidden>
+      <div class="card ctx" id="ctxCard">
+        <div class="ctxsum" id="ctxSum" hidden>
+          <div class="pin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg></div>
+          <div style="min-width:0;flex:1"><div class="ctxloc" id="ctxLoc"></div><div class="small muted" id="ctxShift"></div></div>
+          <button class="btn sm" id="ctxChange" data-t="change">Change</button>
+        </div>
+        <div class="ctxpick" id="ctxPick">
           <div class="step"><div class="lbl" id="lblLoc"><b>1</b><span data-t="pickLoc">Location</span></div><div class="chips" id="locChips"></div></div>
           <div class="step"><div class="lbl" id="lblShift"><b>2</b><span data-t="pickShift">Shift</span></div><div class="chips" id="shiftChips"></div></div>
           <div class="step"><div class="lbl"><b>3</b><span data-t="pickMode">Type</span></div>
             <div class="seg" id="modeSeg"><button data-m="auto" data-t="mAuto">Auto</button><button data-m="in" data-t="mIn">In</button><button data-m="out" data-t="mOut">Out</button></div></div>
-          <div class="cam" id="cam"><button type="button" class="flip" id="flipBtn" hidden aria-label="Switch camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><path d="M9.5 12.5a2.7 2.7 0 0 1 4.6-1.6M14.5 13.5a2.7 2.7 0 0 1-4.6 1.6"/><path d="M14.3 9.6v1.5h-1.5M9.7 16.4v-1.5h1.5"/></svg><span data-t="flip">Switch</span></button><video id="video" playsinline muted></video><div class="frame"></div><div class="hint" id="camHint"></div><div class="off" id="camOff"></div></div>
-          <div class="row">
-            <button class="btn blue lg" id="camBtn" style="flex:1 1 180px"></button>
-            <label class="btn lg" id="photoBtn" style="flex:1 1 140px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span data-t="takeScan">Photo scan</span><input type="file" accept="image/*" capture="user" id="scanFile" hidden></label>
+          <button class="btn pri block" id="ctxDone" hidden data-t="ctxDone">Done</button>
+        </div>
+      </div>
+      <div class="cols">
+        <div class="card camcard">
+          <div class="cam" id="cam"><button type="button" class="flip" id="flipBtn" hidden aria-label="Switch camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><path d="M9.5 12.5a2.7 2.7 0 0 1 4.6-1.6M14.5 13.5a2.7 2.7 0 0 1-4.6 1.6"/><path d="M14.3 9.6v1.5h-1.5M9.7 16.4v-1.5h1.5"/></svg><span data-t="flip">Switch</span></button><video id="video" playsinline muted></video><div class="frame"></div>
+            <div class="hud" id="hud"><div class="hud-l"><div class="logo sm" id="hudLogo">ZF</div><div><div class="hud-t" id="hudTime">--:--</div><div class="hud-s" id="hudCtx"></div></div></div><button class="hud-x" id="kioskExit" data-t="kioskExit">Exit</button></div>
+            <div class="hint" id="camHint"></div><div class="off" id="camOff"></div>
+            <div class="mode-pill" id="modePill"></div>
+          </div>
+          <div class="camfoot">
+            <div class="clockline"><span class="bigtime" id="bigTime">--:--</span><span class="muted small" id="bigDate"></span></div>
+            <div class="row" style="gap:6px"><span class="badge" id="modelBadge"></span><span class="badge" id="geoBadge"></span><span class="badge" id="qBadge" hidden></span></div>
+          </div>
+          <button class="btn blue lg block" id="camBtn"></button>
+          <div class="g2">
+            <label class="btn" id="photoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span data-t="takeScan">Photo scan</span><input type="file" accept="image/*" capture="user" id="scanFile" hidden></label>
+          <button class="btn" id="kioskBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span data-t="kiosk">Kiosk mode</span></button>
           </div>
           <div id="scanResult"></div>
         </div>
         <div class="card">
-          <h2><span data-t="feed">Today</span> <span class="muted mono small" id="feedDate"></span></h2>
+          <div class="ch"><h2><span data-t="feed">Today</span></h2><span class="muted mono small" id="feedDate"></span></div>
           <div class="feed" id="feed"></div>
         </div>
       </div>
@@ -281,6 +431,7 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--blue-bg)}
 
     <!-- REGISTER -->
     <section class="view" id="v-register" hidden>
+      <div class="phead"><h2 data-t="phReg"></h2><p data-t="psReg"></p></div>
       <div class="card" style="display:grid;gap:12px">
         <div class="seg" id="regKind"><button data-k="new" data-t="regNew">New employee</button><button data-k="exist" data-t="regExist">Imported employee</button></div>
         <div class="steps" id="regSteps"><span></span><span></span><span></span></div>
@@ -338,6 +489,7 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--blue-bg)}
 
     <!-- PEOPLE -->
     <section class="view" id="v-people" hidden>
+      <div class="phead"><h2 data-t="phPeople"></h2><p data-t="psPeople"></p></div>
       <div class="card" style="display:grid;gap:10px">
         <div class="row"><label class="fld"><input type="search" id="pq" data-tp="searchPh"></label>
           <select id="pf" style="flex:0 1 190px"><option value="" data-t="fAll">All</option><option value="noconsent" data-t="fNoConsent">No consent</option><option value="noface" data-t="fNoFace">No face</option></select></div>
@@ -347,11 +499,13 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--blue-bg)}
         </div>
         <div id="bulkProg" hidden><div class="prog"><i id="bulkBar"></i></div><div class="small muted" id="bulkTxt" style="margin-top:4px"></div></div>
       </div>
-      <div class="card"><h2><span data-t="people">Employees</span> <span class="muted mono small" id="pcount"></span></h2><div class="plist" id="plist"></div></div>
+      <div class="card"><div class="ch"><h2><span data-t="people">Employees</span> <span class="count" id="pcount"></span></h2></div><div class="psum" id="psum"></div><div class="plist" id="plist"></div></div>
     </section>
 
     <!-- REPORT -->
     <section class="view" id="v-report" hidden>
+      <div class="phead"><h2 data-t="phReport"></h2><p data-t="psReport"></p></div>
+      <div class="seg subseg"><button class="on" data-sub="report" data-t="subRec">Time records</button><button data-sub="pay" data-t="subPay">Payroll summary</button></div>
       <div class="card" style="display:grid;gap:10px">
         <div class="g2">
           <label class="fld"><span data-t="from">From</span><input type="date" id="rpf"></label>
@@ -360,13 +514,15 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--blue-bg)}
           <label class="fld"><span data-t="shift">Shift</span><select id="rps"></select></label>
           <label class="fld span2"><input type="search" id="rpq" data-tp="searchPh"></label>
         </div>
-        <div class="g3"><button class="btn pri" id="rpLoad" data-t="show">Show</button><button class="btn" id="rpXls" data-t="excel">Excel</button><button class="btn warn" id="rpAdd" hidden data-t="addRec">Add</button></div>
+        <div class="btnrow"><button class="btn pri" id="rpLoad" data-t="show">Show</button><button class="btn" id="rpXls" data-t="excel">Excel</button><button class="btn warn" id="rpAdd" hidden data-t="addRec">Add</button></div>
       </div>
       <div class="card" id="rpBody"></div>
     </section>
 
     <!-- PAYROLL -->
     <section class="view" id="v-pay" hidden>
+      <div class="phead"><h2 data-t="phReport"></h2><p data-t="psPay"></p></div>
+      <div class="seg subseg"><button data-sub="report" data-t="subRec">Time records</button><button class="on" data-sub="pay" data-t="subPay">Payroll summary</button></div>
       <div class="card" style="display:grid;gap:10px">
         <div class="seg" id="pyPre"><button data-p="this" data-t="thisM">This month</button><button data-p="last" data-t="lastM">Last month</button><button data-p="cut" data-t="cut">21–20</button></div>
         <div class="g2">
@@ -382,6 +538,7 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--blue-bg)}
 
     <!-- SETTINGS -->
     <section class="view" id="v-set" hidden>
+      <div class="phead"><h2 data-t="phSet"></h2><p data-t="psSet"></p></div>
       <div class="lock" id="setLock"></div>
       <div class="card" id="impCard">
         <h2 data-t="impTitle">Import from template</h2>
@@ -408,6 +565,7 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--blue-bg)}
         <label class="fld s"><span data-t="ver">Version</span><input type="text" id="sVer" class="mono"></label>
         <div class="cols" style="margin-top:10px"><label class="fld"><span>ภาษาไทย</span><textarea id="sTh"></textarea></label><label class="fld"><span>English</span><textarea id="sEn"></textarea></label></div></div>
       <div class="card ed"><div class="row" style="justify-content:flex-end"><span class="small muted" id="saveMsg" style="flex:1"></span><button class="btn pri lg" id="saveSet" data-t="saveSet">Save settings</button></div></div>
+      <div class="about"><div class="logo sm">ZF</div><div><b>Face Clocking System</b> <span class="mono">v1.2</span><div data-t="aboutTxt"></div></div></div>
     </section>
   </main>
 </div>
@@ -477,7 +635,7 @@ th:{appTitle:"ระบบลงเวลาด้วยใบหน้า",barT
  rAdmin:"Admin",rLeader:"Leader",rViewer:"Viewer",
  pickLoc:"เลือก Location",pickShift:"เลือกกะ",pickMode:"ประเภท",mAuto:"อัตโนมัติ",mIn:"เข้างาน",mOut:"ออกงาน",
  camStart:"เปิดกล้องสแกน",camStop:"หยุดกล้อง",takeScan:"ถ่ายรูปสแกน",camNo:"อุปกรณ์หรือหน้านี้เปิดกล้อง live ไม่ได้ ใช้ปุ่ม ถ่ายรูปสแกน แทน",
- camIdle:"เลือก Location และกะ แล้วกดเปิดกล้อง",lookCam:"มองกล้อง ให้ใบหน้าอยู่ในกรอบ",unknown:"ไม่รู้จักใบหน้านี้",already:"ลงเวลาไปแล้วเมื่อสักครู่",
+ camIdle:"พร้อมแล้ว กด เปิดกล้องสแกน เพื่อเริ่ม",lookCam:"มองกล้อง ให้ใบหน้าอยู่ในกรอบ",unknown:"ไม่รู้จักใบหน้านี้",already:"ลงเวลาไปแล้วเมื่อสักครู่",
  mLoad:"กำลังโหลดโมเดล…",mReady:"พร้อมสแกน",mFail:"โหลดโมเดลไม่ได้",needPick:"เลือก Location และกะก่อน",noLoc:"ยังไม่มี Location — Admin เพิ่มได้ที่ ตั้งค่า",
  feed:"ลงเวลาวันทำงานนี้",noScan:"ยังไม่มีการลงเวลา",noFace:"ไม่พบใบหน้าในภาพ ถ่ายใหม่ให้หน้าตรง แสงพอ",noMatch:"ไม่พบพนักงานที่ตรงกับใบหน้า",noFaces:"ยังไม่มีพนักงานที่ลงทะเบียนใบหน้า",
  cIn:"เข้างาน",cOut:"ออกงาน",cDup:"ลงเวลาไปแล้ว",undo:"ยกเลิกรายการ",undone:"ยกเลิกแล้ว",match:"ตรงกัน",late:"สาย",min:"นาที",
@@ -505,7 +663,7 @@ th:{appTitle:"ระบบลงเวลาด้วยใบหน้า",barT
  brand:"โลโก้และชื่อไซต์",siteName:"ชื่อไซต์",logoUrl:"ลิงก์โลโก้",logoFile:"ใช้ไฟล์รูปโลโก้",consentAdm:"ข้อความหนังสือยินยอม",consentRev:"ควรให้ HR / DPO ตรวจก่อนใช้งานจริง แก้ข้อความแล้วให้เปลี่ยนเลขฉบับ เว้นว่าง = ใช้ข้อความมาตรฐาน",saveSet:"บันทึกการตั้งค่า",
  editEmp:"แก้ไขพนักงาน",active:"ใช้งาน",faceAdd:"เพิ่ม/เปลี่ยนรูปใบหน้า",withdraw:"ถอนความยินยอม (ลบใบหน้า)",delEmp:"ลบพนักงาน",viewSig:"ดูลายเซ็น",signNow:"ลงนามยินยอม",
  cfWithdraw:"ลบภาพและแม่แบบใบหน้าของพนักงานนี้? จะสแกนไม่ได้จนกว่าจะลงนามและเพิ่มรูปใหม่",cfDel:"ลบพนักงานและข้อมูลส่วนบุคคลทั้งหมด? บันทึกเวลาเดิมยังอยู่",
- editRec:"แก้ไขบันทึกเวลา",emp:"พนักงาน",wd:"วันทำงาน",delRec:"ลบรายการ",err:"เกิดข้อผิดพลาด",forbidden:"ไม่มีสิทธิ์",no_consent:"พนักงานยังไม่ได้ยินยอม",busy:"ระบบไม่ว่าง ลองอีกครั้ง",signedAt:"ลงนามเมื่อ",gpsWait:"กำลังหาพิกัด GPS…",flip:"สลับกล้อง",ok:"ตกลง",saving:"กำลังบันทึก…",cfInT:"ลงเวลาเข้างานแล้ว",cfOutT:"ลงเวลาออกงานแล้ว",cfDupT:"ลงเวลาไปแล้ว",cfFailT:"ยังไม่ได้ลงเวลา",cfSaved:"บันทึกลงระบบเรียบร้อย",cfRetry:"กรุณาสแกนใหม่",camGas:"เปิดผ่าน Apps Script: Google ไม่อนุญาตกล้อง live — ใช้ปุ่ม ถ่ายรูปสแกน หรือเปิดจาก GitHub Pages",camDenied:"เบราว์เซอร์ถูกปิดสิทธิ์กล้อง — แตะไอคอนแม่กุญแจข้างที่อยู่เว็บ › กล้อง › อนุญาต แล้วรีเฟรช",camBusy:"กล้องถูกใช้งานโดยโปรแกรมอื่น (เช่น Teams) — ปิดโปรแกรมนั้นแล้วลองใหม่",camNone:"ไม่พบกล้องในเครื่องนี้",gpsOff:"ไม่ได้เปิด GPS (บันทึกเฉพาะ Location)"},
+ editRec:"แก้ไขบันทึกเวลา",emp:"พนักงาน",wd:"วันทำงาน",delRec:"ลบรายการ",err:"เกิดข้อผิดพลาด",forbidden:"ไม่มีสิทธิ์",no_consent:"พนักงานยังไม่ได้ยินยอม",busy:"ระบบไม่ว่าง ลองอีกครั้ง",signedAt:"ลงนามเมื่อ",gpsWait:"กำลังหาพิกัด GPS…",phReg:"ลงทะเบียนพนักงาน",psReg:"ข้อมูล · ความยินยอม PDPA · ใบหน้า",phPeople:"พนักงาน",psPeople:"ข้อมูลพนักงาน สถานะความยินยอม และใบหน้า",phReport:"รายงาน",psReport:"บันทึกเวลาเข้า-ออกรายวัน แก้ไขได้ในโหมดแก้ไข",psPay:"สรุปชั่วโมงทำงานและ OT สำหรับจ่ายเงิน",phSet:"ตั้งค่า",psSet:"Location · กะ · OT · กฎการคำนวณ · PIN",pConsent:"ยินยอมแล้ว",pFace:"มีใบหน้า",aboutTxt:"ข้อมูลจัดเก็บใน Google Sheet ของผู้ดูแลระบบ · เวลาอ้างอิงจากเซิร์ฟเวอร์",nHome:"ภาพรวม",hToday:"วันนี้",refresh:"รีเฟรช",hByLoc:"แยกตาม Location",hLatest:"ลงเวลาล่าสุด",hNotIn:"ยังไม่ลงเวลาเข้า",hOpen:"ยังไม่ลงเวลาออก",hAllIn:"ทุกคนลงเวลาเข้าแล้ว",hNoOpen:"ไม่มีรายการค้าง",hUpdated:"อัปเดต",sWorking:"กำลังทำงาน",sWorkingS:"เข้างานแล้ว ยังไม่ออก",sDone:"เลิกงานแล้ว",sDoneS:"ลงเข้า-ออกครบ",sLate:"มาสาย",sLateS:"ของกะปัจจุบัน",sNotIn:"ยังไม่มา",sNotInS:"จากพนักงาน {n} คน",subRec:"บันทึกเวลา",subPay:"สรุปจ่ายเงิน",change:"เปลี่ยน",ctxDone:"เสร็จ",kiosk:"โหมด Kiosk",kioskExit:"ออก",kioskConfirm:"แตะอีกครั้งเพื่อออก",closer:"ขยับเข้าใกล้กล้องอีกนิด",pinEnter:"ใส่ PIN เพื่อเข้าสู่ระบบ",cfQT:"บันทึกไว้ในเครื่องแล้ว",cfQN:"เน็ตขัดข้อง ระบบจะส่งเข้าอัตโนมัติเมื่อเชื่อมต่อได้ ไม่ต้องสแกนซ้ำ",qWait:"รอส่ง {n}",qSent:"ส่งรายการที่ค้างแล้ว {n} รายการ",flip:"สลับกล้อง",okBtn:"ตกลง",saving:"กำลังบันทึก…",cfInT:"ลงเวลาเข้างานแล้ว",cfOutT:"ลงเวลาออกงานแล้ว",cfDupT:"ลงเวลาไปแล้ว",cfFailT:"ยังไม่ได้ลงเวลา",cfSaved:"บันทึกลงระบบเรียบร้อย",cfRetry:"กรุณาสแกนใหม่",camGas:"เปิดผ่าน Apps Script: Google ไม่อนุญาตกล้อง live — ใช้ปุ่ม ถ่ายรูปสแกน หรือเปิดจาก GitHub Pages",camDenied:"เบราว์เซอร์ถูกปิดสิทธิ์กล้อง — แตะไอคอนแม่กุญแจข้างที่อยู่เว็บ › กล้อง › อนุญาต แล้วรีเฟรช",camBusy:"กล้องถูกใช้งานโดยโปรแกรมอื่น (เช่น Teams) — ปิดโปรแกรมนั้นแล้วลองใหม่",camNone:"ไม่พบกล้องในเครื่องนี้",gpsOff:"ไม่ได้เปิด GPS (บันทึกเฉพาะ Location)"},
 en:{appTitle:"Face Clocking System",barTitle:"Face Clocking",pinPh:"PIN",remember:"Remember on this device (for a leader's kiosk)",signIn:"Sign in",tryDemo:"Try demo mode (sample data)",
  badPin:"Wrong PIN",notConfigured:"AdminPIN isn't set in the SETTINGS sheet",noApi:"API_URL isn't set in the file. Demo mode still works.",netErr:"Can't reach the server. Check the connection.",
  editOn:"Edit Mode is on",demoBar:"DEMO mode · sample data stays on this device only",
@@ -513,7 +671,7 @@ en:{appTitle:"Face Clocking System",barTitle:"Face Clocking",pinPh:"PIN",remembe
  rAdmin:"Admin",rLeader:"Leader",rViewer:"Viewer",
  pickLoc:"Select location",pickShift:"Select shift",pickMode:"Type",mAuto:"Auto",mIn:"In",mOut:"Out",
  camStart:"Start camera",camStop:"Stop camera",takeScan:"Photo scan",camNo:"Live camera isn't available here. Use Photo scan instead.",
- camIdle:"Pick a location and shift, then start the camera",lookCam:"Look at the camera, face inside the frame",unknown:"Face not recognised",already:"Already clocked a moment ago",
+ camIdle:"Ready. Tap Start camera to begin.",lookCam:"Look at the camera, face inside the frame",unknown:"Face not recognised",already:"Already clocked a moment ago",
  mLoad:"Loading models…",mReady:"Ready",mFail:"Models failed to load",needPick:"Pick a location and shift first",noLoc:"No locations yet. An admin can add them in Settings.",
  feed:"This work day",noScan:"No scans yet",noFace:"No face found. Retake facing the camera in good light.",noMatch:"No employee matches this face",noFaces:"No employees have face data yet",
  cIn:"Clocked in",cOut:"Clocked out",cDup:"Already clocked",undo:"Undo",undone:"Undone",match:"Match",late:"Late",min:"min",
@@ -541,7 +699,7 @@ en:{appTitle:"Face Clocking System",barTitle:"Face Clocking",pinPh:"PIN",remembe
  brand:"Logo and site",siteName:"Site name",logoUrl:"Logo link",logoFile:"Use a logo image file",consentAdm:"Consent text",consentRev:"Have HR or the DPO review before go-live. Change the version whenever you edit it. Blank uses the standard text.",saveSet:"Save settings",
  editEmp:"Edit employee",active:"Active",faceAdd:"Add / replace face photos",withdraw:"Withdraw consent (delete face)",delEmp:"Delete employee",viewSig:"View signature",signNow:"Sign consent",
  cfWithdraw:"Delete this employee's face photos and template? They can't scan until they sign again and add photos.",cfDel:"Delete this employee and all personal data? Past time records are kept.",
- editRec:"Edit time record",emp:"Employee",wd:"Work date",delRec:"Delete record",err:"Something went wrong",forbidden:"Not allowed",no_consent:"Employee hasn't consented yet",busy:"Server busy, try again",signedAt:"Signed",gpsWait:"Getting GPS…",flip:"Switch",ok:"OK",saving:"Saving…",cfInT:"Clocked in",cfOutT:"Clocked out",cfDupT:"Already clocked",cfFailT:"Not clocked",cfSaved:"Saved to the system",cfRetry:"Please scan again",camGas:"Opened from Apps Script, where Google blocks the live camera. Use Photo scan, or open from GitHub Pages.",camDenied:"Camera permission is blocked. Tap the lock icon by the address bar › Camera › Allow, then reload.",camBusy:"Another app (e.g. Teams) is using the camera. Close it and try again.",camNone:"No camera found on this device.",gpsOff:"GPS off (location only)"}
+ editRec:"Edit time record",emp:"Employee",wd:"Work date",delRec:"Delete record",err:"Something went wrong",forbidden:"Not allowed",no_consent:"Employee hasn't consented yet",busy:"Server busy, try again",signedAt:"Signed",gpsWait:"Getting GPS…",phReg:"Register employee",psReg:"Details · PDPA consent · Face",phPeople:"Employees",psPeople:"Employee details, consent and face status",phReport:"Reports",psReport:"Daily in/out records, editable in Edit Mode",psPay:"Working and OT hours for payroll",phSet:"Settings",psSet:"Locations · Shifts · OT · Rules · PINs",pConsent:"Consented",pFace:"Has face",aboutTxt:"Data is stored in the admin's Google Sheet · Times come from the server",nHome:"Overview",hToday:"Today",refresh:"Refresh",hByLoc:"By location",hLatest:"Latest scans",hNotIn:"Not clocked in",hOpen:"Missing clock-out",hAllIn:"Everyone has clocked in",hNoOpen:"Nothing pending",hUpdated:"Updated",sWorking:"Working",sWorkingS:"Clocked in, not out yet",sDone:"Finished",sDoneS:"Clocked in and out",sLate:"Late",sLateS:"Current shift",sNotIn:"Not in yet",sNotInS:"Of {n} employees",subRec:"Time records",subPay:"Payroll summary",change:"Change",ctxDone:"Done",kiosk:"Kiosk mode",kioskExit:"Exit",kioskConfirm:"Tap again to exit",closer:"Move a little closer",pinEnter:"Enter your PIN to sign in",cfQT:"Saved on this device",cfQN:"Connection problem. It will be sent automatically once online, no need to scan again.",qWait:"{n} pending",qSent:"Sent {n} pending records",flip:"Switch",okBtn:"OK",saving:"Saving…",cfInT:"Clocked in",cfOutT:"Clocked out",cfDupT:"Already clocked",cfFailT:"Not clocked",cfSaved:"Saved to the system",cfRetry:"Please scan again",camGas:"Opened from Apps Script, where Google blocks the live camera. Use Photo scan, or open from GitHub Pages.",camDenied:"Camera permission is blocked. Tap the lock icon by the address bar › Camera › Allow, then reload.",camBusy:"Another app (e.g. Teams) is using the camera. Close it and try again.",camNone:"No camera found on this device.",gpsOff:"GPS off (location only)"}
 };
 const LS = { get(k){ try{return localStorage.getItem(k)}catch(e){return null} }, set(k,v){ try{ v==null?localStorage.removeItem(k):localStorage.setItem(k,v) }catch(e){} } };
 let lang = LS.get('fc-lang') || 'th';
@@ -641,8 +799,11 @@ const Demo = (() => {
 /* ---------------- login ---------------- */
 $('#keypad').innerHTML = ['1','2','3','4','5','6','7','8','9','C','0','⌫'].map(k=>`<button type="button" data-k="${k}">${k}</button>`).join('');
 $('#keypad').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; const p=$('#pinIn'); const k=b.dataset.k;
-  if(k==='C') p.value=''; else if(k==='⌫') p.value=p.value.slice(0,-1); else if(p.value.length<12) p.value+=k; });
+  if(k==='C') p.value=''; else if(k==='⌫') p.value=p.value.slice(0,-1); else if(p.value.length<12) p.value+=k; renderDots(); });
 $('#pinIn').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+function renderDots(){ const n=$('#pinIn').value.length; const total=Math.max(6,n); $('#pinDots').innerHTML=Array.from({length:total},(_,i)=>`<i class="${i<n?'on':''}"></i>`).join(''); }
+$('#pinIn').addEventListener('input', renderDots); $('#pinDots').addEventListener('click', ()=>$('#pinIn').focus()); renderDots();
+document.addEventListener('keydown', e=>{ if($('#login').hidden || e.target===$('#pinIn')) return; if(/^[0-9]$/.test(e.key)||e.key==='Backspace'||e.key==='Enter'){ $('#pinIn').focus(); } });
 $('#loginBtn').addEventListener('click', ()=>doLogin());
 $('#demoBtn').addEventListener('click', ()=>{ S.demo=true; S.pin='demo'; S.role='admin'; enterApp(); });
 async function doLogin(pin){
@@ -653,10 +814,11 @@ async function doLogin(pin){
   catch(e){ $('#loginMsg').textContent = e==='no_api' ? t('noApi') : errText(e); LS.set('fc-pin',null); }
   $('#loginBtn').disabled=false;
 }
-$('#logoutBtn').addEventListener('click', ()=>{ stopCam(); LS.set('fc-pin',null); location.reload(); });
+$('#logoutBtn').addEventListener('click', ()=>{ exitKiosk(); stopCam(); LS.set('fc-pin',null); location.reload(); });
 
 /* ---------------- shell ---------------- */
 const ICON = {
+  home:'<path d="M4 11.5L12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z"/>',
   clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
   reg:'<circle cx="10" cy="8" r="3.5"/><path d="M3.5 19c.8-3.2 3.3-5 6.5-5s5.7 1.8 6.5 5M18 8v6M15 11h6"/>',
   people:'<circle cx="9" cy="8" r="3"/><path d="M3.5 18c.6-2.7 2.7-4.3 5.5-4.3s4.9 1.6 5.5 4.3"/><circle cx="17" cy="9" r="2.4"/><path d="M15.8 13.7c2.3 0 4.1 1.4 4.7 3.8"/>',
@@ -665,21 +827,25 @@ const ICON = {
   set:'<circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/>'
 };
 const TABS = [
-  {id:'clock',k:'nClock',ic:'clock',min:'leader'},{id:'register',k:'nReg',ic:'reg',min:'leader'},{id:'people',k:'nPeople',ic:'people',min:'viewer'},
-  {id:'report',k:'nReport',ic:'report',min:'viewer'},{id:'pay',k:'nPay',ic:'pay',min:'viewer'},{id:'set',k:'nSet',ic:'set',min:'viewer'}];
+  {id:'home',k:'nHome',ic:'home',min:'viewer'},{id:'clock',k:'nClock',ic:'clock',min:'leader'},{id:'register',k:'nReg',ic:'reg',min:'leader'},{id:'people',k:'nPeople',ic:'people',min:'viewer'},
+  {id:'report',k:'nReport',ic:'report',min:'viewer'},{id:'set',k:'nSet',ic:'set',min:'viewer'}];
+const VIEWS=['home','clock','register','people','report','pay','set'];
 function renderNav(){
   const vis=TABS.filter(x=>rank(S.role)>=rank(x.min));
-  if(!vis.find(x=>x.id===S.tab)) S.tab=vis[0].id;
-  $('#nav').innerHTML = vis.map(x=>`<button data-tab="${x.id}" class="${x.id===S.tab?'on':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICON[x.ic]}</svg><span>${esc(t(x.k))}</span></button>`).join('');
-  TABS.forEach(x=>$('#v-'+x.id).hidden = x.id!==S.tab);
+  if(!vis.find(x=>x.id===S.tab) && S.tab!=='pay') S.tab=vis[0].id;
+  const cur = S.tab==='pay' ? 'report' : S.tab;
+  $('#nav').innerHTML = vis.map(x=>`<button data-tab="${x.id}" class="${x.id===cur?'on':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICON[x.ic]}</svg><span>${esc(t(x.k))}</span></button>`).join('');
+  VIEWS.forEach(id=>$('#v-'+id).hidden = id!==S.tab);
 }
-$('#nav').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; go(b.dataset.tab); });
+$('#nav').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; go(b.dataset.tab==='report' && S.lastSub==='pay' ? 'pay' : b.dataset.tab); });
+document.addEventListener('click', e=>{ const b=e.target.closest('.subseg button'); if(!b) return; S.lastSub=b.dataset.sub; go(b.dataset.sub); });
 function go(tab){
-  if(S.tab==='clock' && tab!=='clock') stopCam();
+  if(S.tab==='clock' && tab!=='clock'){ exitKiosk(); stopCam(); }
   if(S.tab==='register' && tab!=='register') stopRegCam();
   S.tab=tab; renderNav(); window.scrollTo(0,0);
   if(tab==='clock'){ ensureModels().catch(()=>{}); renderClock(); loadFeed(); refreshGPS(); renderGeo(); }
   if(tab==='register'){ ensureModels().catch(()=>{}); renderRegister(); requestAnimationFrame(initSig); }
+  if(tab==='home') loadHome();
   if(tab==='people') renderPeople();
   if(tab==='report' && !S.rp.length) loadReport();
   if(tab==='pay' && !S.py.length) loadPay();
@@ -700,7 +866,8 @@ async function enterApp(){
   $('#roleChip').textContent=t({admin:'rAdmin',leader:'rLeader',viewer:'rViewer'}[S.role]);
   $('#editBtn').hidden = S.role!=='admin';
   try{ await boot(); }catch(e){ toast(errText(e)); }
-  S.tab = rank(S.role)>=2 ? 'clock' : 'report';
+  Q.flush();
+  S.tab = S.role==='leader' ? 'clock' : 'home';
   applyLang(); go(S.tab);
 }
 async function boot(){
@@ -709,8 +876,9 @@ async function boot(){
   renderBrand();
 }
 function renderBrand(){
+  if(S.cfg&&S.cfg.siteName) LS.set('fc-site',S.cfg.siteName); if(S.cfg&&S.cfg.logoUrl) LS.set('fc-logo',S.cfg.logoUrl);
   const u=S.cfg&&S.cfg.logoUrl;
-  [$('#logo'),$('#loginLogo')].forEach(l=>{ if(u) l.innerHTML=`<img src="${esc(u)}" alt="ZF">`; else l.textContent='ZF'; });
+  [$('#logo'),$('#loginLogo'),...document.querySelectorAll('.about .logo')].forEach(l=>{ if(u) l.innerHTML=`<img src="${esc(u)}" alt="ZF">`; else l.textContent='ZF'; });
   $('#siteName').textContent = (S.cfg&&S.cfg.siteName)||'';
 }
 function renderAll(){
@@ -762,16 +930,23 @@ function renderClock(){
   if(!S.shift){ const h=new Date().getHours(); const a=S.cfg.shifts.find(s=>{ const st=hm(s.start)/60; return h>=st-2 && h<st+10; })||S.cfg.shifts[0]; S.shift=a&&a.id; }
   $('#shiftChips').innerHTML = S.cfg.shifts.map(s=>`<button data-id="${esc(s.id)}" class="${s.id===S.shift?'on':''}" ${S.loc?'':'disabled'}><span>${esc(nm(s))}</span><small>${esc(s.start)}–${esc(s.end)}</small></button>`).join('');
   $('#lblLoc').classList.toggle('done',!!S.loc); $('#lblShift').classList.toggle('done',!!(S.loc&&S.shift));
+  if(S.pickOpen==null) S.pickOpen = !(S.loc&&S.shift);
+  const showSum = S.loc && S.shift && !S.pickOpen;
+  $('#ctxSum').hidden=!showSum; $('#ctxPick').hidden=!!showSum; $('#ctxDone').hidden=!(S.loc&&S.shift);
+  if(S.loc&&S.shift){ const sh=shiftBy(S.shift); $('#ctxLoc').textContent=nm(locBy(S.loc)); $('#ctxShift').innerHTML=`${esc(nm(sh))} · <span class="mono">${esc(sh.start)}–${esc(sh.end)}</span> · ${esc(t({auto:'mAuto',in:'mIn',out:'mOut'}[S.mode]))}`; }
+  const mp=$('#modePill'); mp.className='mode-pill '+(S.mode==='auto'?'':S.mode); mp.textContent=t({auto:'mAuto',in:'mIn',out:'mOut'}[S.mode]);
   document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.m===S.mode));
   const ready = S.loc && S.shift && S.models;
   $('#camBtn').innerHTML = camState.on ? `<span>${esc(t('camStop'))}</span>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><circle cx="12" cy="11" r="3"/></svg><span>${esc(t('camStart'))}</span>`;
-  $('#camBtn').disabled = !ready || !hasCam();
+  $('#camBtn').disabled = !ready || !hasCam(); $('#kioskBtn').disabled = !ready || !hasCam();
   $('#photoBtn').style.opacity = ready ? 1 : .45; $('#photoBtn').style.pointerEvents = ready ? '' : 'none';
   $('#camOff').hidden = camState.on;
   $('#camOff').textContent = !(S.loc&&S.shift) ? t('needPick') : !hasCam() ? t('camNo') : t('camIdle');
 }
 $('#locChips').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; S.loc=b.dataset.id; LS.set('fc-loc',S.loc); renderClock(); });
-$('#shiftChips').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b||b.disabled) return; S.shift=b.dataset.id; renderClock(); loadFeed(); });
+$('#shiftChips').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b||b.disabled) return; S.shift=b.dataset.id; S.pickOpen=false; renderClock(); loadFeed(); });
+$('#ctxChange').addEventListener('click', ()=>{ S.pickOpen=true; renderClock(); });
+$('#ctxDone').addEventListener('click', ()=>{ S.pickOpen=false; renderClock(); });
 $('#modeSeg').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; S.mode=b.dataset.m; renderClock(); });
 const CAM={facing:LS.get('fc-facing')||'user', devs:[], idx:-1};
 async function listCams(){ try{ CAM.devs=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput'); }catch(e){ CAM.devs=[]; } return CAM.devs; }
@@ -817,7 +992,10 @@ async function loop(){
     camState.busy=true;
     try{
       const v=$('#video'); const d=await detect(v);
+      const far = d && v.videoWidth && d.detection.box.width < v.videoWidth*0.16;
+      $('#cam').classList.toggle('far', !!far);
       if(!d){ camState.last={id:null,n:0}; $('#cam').classList.remove('hit'); $('#camHint').textContent=t('lookCam'); }
+      else if(far){ camState.last={id:null,n:0}; $('#cam').classList.remove('hit'); $('#camHint').textContent=t('closer'); }
       else{
         const m=bestMatch(d.descriptor); const thr=+S.cfg.threshold||0.5;
         if(!m || m.dist>thr){ camState.last={id:null,n:0}; $('#cam').classList.remove('hit'); $('#camHint').textContent=Object.keys(S.faces).length?t('unknown'):t('noFaces'); }
@@ -857,6 +1035,7 @@ function beep(kind){ try{ unlockAudio(); if(!AC) return;
 const CF={timer:null,open:false};
 const CF_ICON={in:'<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>',
   out:'<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>',
+  queue:'<path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4 4 0 0 1-.5 9.5z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 11v4l2 1.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>',
   dup:'<circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>',
   fail:'<path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>',
   wait:'<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="36 20" style="transform-origin:center;animation:spin 1s linear infinite"/>'};
@@ -867,7 +1046,7 @@ function showCF(kind,o){
    <div class="body">${o.name?`<div class="who">${o.photo?`<img src="${o.photo}" alt="">`:'<span class="ph"></span>'}<div style="min-width:0"><b>${esc(o.name)}</b><span class="mono small muted">${esc(o.id||'')}</span></div></div>`:''}
    ${o.meta&&o.meta.length?`<div class="meta">${o.meta.join('')}</div>`:''}${o.note?`<div class="small muted">${esc(o.note)}</div>`:''}
    ${secs?`<div class="bar"><i style="animation:cfbar ${secs}s linear forwards"></i></div>`:''}
-   ${kind!=='wait'?`<div class="acts" style="${o.undo?'':'grid-template-columns:1fr'}">${o.undo?`<button class="btn" id="cfUndo">${esc(t('undo'))}</button>`:''}<button class="btn pri lg" id="cfOk">${esc(t('ok'))}</button></div>`:''}</div></div>`;
+   ${kind!=='wait'?`<div class="acts" style="${o.undo?'':'grid-template-columns:1fr'}">${o.undo?`<button class="btn" id="cfUndo">${esc(t('undo'))}</button>`:''}<button class="btn pri lg" id="cfOk">${esc(t('okBtn'))}</button></div>`:''}</div></div>`;
   if($('#cfOk')) $('#cfOk').onclick=hideCF;
   if(o.undo && $('#cfUndo')) $('#cfUndo').onclick=async()=>{ clearTimeout(CF.timer); $('#cfUndo').disabled=true; await o.undo(); hideCF(); };
   if(secs) CF.timer=setTimeout(hideCF, secs*1000);
@@ -902,7 +1081,14 @@ async function doClock(id, d){
     if(r.action==='out'&&c&&!c.open){ meta.push(`<span class="badge i">${esc(t('normal'))} ${hrs(c.normal)}</span>`); if(c.otMin) meta.push(`<span class="badge i">OT ${hrs(c.otMin)}</span>`); }
     showCF(r.action,{title:t(r.action==='in'?'cfInT':'cfOutT'),time:tt,date:dateTxt(ts),name:empName(id),id,photo:ph,meta,note:t('cfSaved'),undo:doUndo});
     loadFeed();
-  }catch(e){ $('#scanResult').innerHTML=card('fail',null,errText(e)); delete camState.recent[id]; beep('fail'); showCF('fail',{title:t('cfFailT'),name:empName(id),id,note:errText(e)+' · '+t('cfRetry')}); }
+  }catch(e){
+    if(isNetErr(e) && !S.demo){
+      const ts=Date.now(); Q.add({empId:id,shift:S.shift,loc:S.loc,mode:S.mode,score,gps:GEO.v,clientTs:ts});
+      camState.recent[id]=ts; beep('in'); const d2=new Date(ts), tt=pad(d2.getHours())+':'+pad(d2.getMinutes());
+      $('#scanResult').innerHTML=card('dup',S.faces[id]&&S.faces[id].photo,t('cfQT'),`<div>${esc(empName(id))} · <span class="mono">${tt}</span></div>`);
+      showCF('queue',{title:t('cfQT'),time:tt,date:dateTxt(d2),name:empName(id),id,photo:S.faces[id]&&S.faces[id].photo,note:t('cfQN')}); return;
+    }
+    $('#scanResult').innerHTML=card('fail',null,errText(e)); delete camState.recent[id]; beep('fail'); showCF('fail',{title:t('cfFailT'),name:empName(id),id,note:errText(e)+' · '+t('cfRetry')}); }
 }
 async function loadFeed(){
   if(!S.shift||rank(S.role)<2) return; const wd=workDateFor(shiftBy(S.shift),new Date()); S.feedWd=wd;
@@ -985,6 +1171,8 @@ function renderPeople(){
   const q=$('#pq').value.trim().toLowerCase(), f=$('#pf').value;
   const list=Object.values(S.emps).filter(e=>(!q||[e.id,e.first,e.last,e.nick].join(' ').toLowerCase().includes(q)) && (!f || (f==='noconsent'&&!consented(e)) || (f==='noface'&&!e.hasFace))).sort((a,b)=>a.id.localeCompare(b.id));
   $('#pcount').textContent=Object.keys(S.emps).length;
+  { const all=Object.values(S.emps), cs=all.filter(consented).length, fc=all.filter(e=>e.hasFace).length, act=all.filter(e=>e.active!==false).length;
+    $('#psum').innerHTML=`<div><b>${act}</b><span>${esc(t('active'))}</span></div><div><b>${cs}</b><span>${esc(t('pConsent'))}</span></div><div><b>${fc}</b><span>${esc(t('pFace'))}</span></div><div><b>${all.length-cs}</b><span>${esc(t('kN'))}</span></div>`; }
   const canEdit = S.role==='admin' && S.edit, canSign = rank(S.role)>=2;
   $('#plist').innerHTML = list.length ? list.map(e=>{ const ph=S.faces[e.id]&&S.faces[e.id].photo;
     const act = canEdit ? `<button class="btn warn" data-edit="${esc(e.id)}" style="min-height:38px;padding:4px 12px">${esc(t('edit'))}</button>` : (canSign && !consented(e) ? `<button class="btn" data-sign="${esc(e.id)}" style="min-height:38px;padding:4px 12px">${esc(t('signNow'))}</button>` : '');
@@ -1187,8 +1375,117 @@ $('#saveSet').addEventListener('click', async ()=>{
   catch(x){ toast(errText(x)); }
 });
 
+/* ---------------- offline queue ---------------- */
+const isNetErr = e => /fetch|network|Failed|Load failed|NetworkError|timeout/i.test(String(e&&e.message||e));
+const Q = {
+  key:'fc-queue', busy:false,
+  all(){ try{ return JSON.parse(LS.get(this.key)||'[]'); }catch(e){ return []; } },
+  save(a){ LS.set(this.key, a.length?JSON.stringify(a):null); renderSync(); },
+  add(item){ const a=this.all(); a.push(Object.assign({tries:0},item)); this.save(a); },
+  async flush(){
+    if(this.busy || S.demo || !S.pin) return; let a=this.all(); if(!a.length) return; this.busy=true; let sent=0;
+    try{
+      while(a.length){
+        const it=a[0];
+        try{ await call('clock', Object.assign({}, it, {offline:true})); a.shift(); sent++; }
+        catch(e){ if(isNetErr(e)) break; it.tries=(it.tries||0)+1; if(it.tries>=5){ a.shift(); } else break; }
+        this.save(a);
+      }
+    } finally { this.busy=false; this.save(a); }
+    if(sent){ toast(t('qSent').replace('{n}',sent)); if(S.tab==='clock') loadFeed(); if(S.tab==='home') loadHome(); }
+  }
+};
+function renderSync(){
+  const n=Q.all().length, chip=$('#syncChip'), qb=$('#qBadge');
+  chip.hidden = !n; chip.textContent = t('qWait').replace('{n}',n);
+  qb.hidden = !n; qb.className='badge w'; qb.textContent = t('qWait').replace('{n}',n);
+}
+window.addEventListener('online', ()=>Q.flush());
+setInterval(()=>Q.flush(), 20e3);
+
+/* ---------------- kiosk ---------------- */
+const K = { on:false, wake:null, armed:0 };
+async function enterKiosk(){
+  if(!(S.loc&&S.shift)) return;
+  unlockAudio(); K.on=true; document.body.classList.add('kiosk'); renderHud();
+  try{ if(document.documentElement.requestFullscreen && !document.fullscreenElement) await document.documentElement.requestFullscreen(); }catch(e){}
+  try{ if(navigator.wakeLock) K.wake=await navigator.wakeLock.request('screen'); }catch(e){}
+  if(!camState.on) await startCam();
+}
+function exitKiosk(){
+  if(!K.on) return; K.on=false; document.body.classList.remove('kiosk'); $('#kioskExit').textContent=t('kioskExit'); K.armed=0;
+  try{ if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); }catch(e){}
+  try{ K.wake && K.wake.release(); }catch(e){} K.wake=null;
+}
+$('#kioskBtn').addEventListener('click', enterKiosk);
+$('#kioskExit').addEventListener('click', e=>{ e.stopPropagation();
+  if(Date.now()-K.armed < 3000){ exitKiosk(); return; }
+  K.armed=Date.now(); e.target.textContent=t('kioskConfirm'); setTimeout(()=>{ if(K.on) $('#kioskExit').textContent=t('kioskExit'); },3000); });
+document.addEventListener('visibilitychange', async ()=>{ if(K.on && document.visibilityState==='visible'){ try{ if(navigator.wakeLock) K.wake=await navigator.wakeLock.request('screen'); }catch(e){} } });
+function renderHud(){
+  const n=new Date(); $('#hudTime').textContent=pad(n.getHours())+':'+pad(n.getMinutes());
+  if(S.cfg && S.loc && S.shift){ const sh=shiftBy(S.shift); $('#hudCtx').textContent=`${nm(locBy(S.loc))} · ${nm(sh)} ${sh.start}–${sh.end}`; }
+  const u=S.cfg&&S.cfg.logoUrl; const l=$('#hudLogo'); if(u) l.innerHTML=`<img src="${esc(u)}" alt="ZF">`; else l.textContent='ZF';
+}
+setInterval(()=>{ if(K.on) renderHud(); }, 1000);
+
+/* ---------------- overview ---------------- */
+const H = { rows:[], at:0, timer:null };
+async function loadHome(){
+  const now=new Date(), y=new Date(now); y.setDate(y.getDate()-1);
+  $('#hDate').textContent=now.toLocaleDateString(lang==='th'?'th-TH':'en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  try{ H.rows=(await call('att',{from:ymd(y),to:ymd(now)})).map(r=>Object.assign(r,{c:calc(r)})); H.at=Date.now(); renderHome(); }
+  catch(e){ $('#hStats').innerHTML=`<div class="empty" style="grid-column:1/-1">${esc(errText(e))}</div>`; }
+  clearTimeout(H.timer); H.timer=setTimeout(()=>{ if(S.tab==='home' && !document.hidden) loadHome(); }, 60e3);
+}
+$('#hRefresh').addEventListener('click', loadHome);
+function renderHome(){
+  if(!S.cfg) return;
+  const now=new Date(), nowMs=now.getTime(), today=ymd(now);
+  const yest=(()=>{ const d=new Date(now); d.setDate(d.getDate()-1); return ymd(d); })();
+  const emps=Object.values(S.emps).filter(e=>e.active!==false);
+  const recOf={}; H.rows.forEach(r=>{ (recOf[r.id]=recOf[r.id]||[]).push(r); });
+  let working=0, done=0, late=0; const notIn=[], open=[], seen=new Set();
+  const isCurrent = r => { const sh=shiftBy(r.shift); if(!sh) return r.wd===today; return r.wd===workDateFor(sh,now); };
+  H.rows.forEach(r=>{
+    const c=r.c; if(!c) return;
+    if(isCurrent(r)){ seen.add(r.id); if(c.open) working++; else done++; if(c.late>0) late++; }
+    if(c.open){ const sh=shiftBy(r.shift); const endAbs = sh ? dayStart(r.wd)+windows(sh).e*6e4 : dayStart(r.wd)+18*3600e3;
+      const lastOt = sh&&sh.ot&&sh.ot.length ? dayStart(r.wd)+Math.max(...windows(sh).ot.map(o=>o.to))*6e4 : endAbs;
+      if(nowMs > Math.max(endAbs,lastOt)+60*60e3) open.push(r); }
+  });
+  emps.forEach(e=>{
+    if(seen.has(e.id)) return; const sh=shiftBy(e.shift); if(!sh) return;
+    const wd=workDateFor(sh,now); const startAbs=dayStart(wd)+hm(sh.start)*6e4+(+S.cfg.graceMin||0)*6e4;
+    if(nowMs>startAbs && nowMs<dayStart(wd)+windows(sh).e*6e4) notIn.push(e);
+  });
+  const IC={w:'<path d="M12 7.5V12l3 2"/><circle cx="12" cy="12" r="8.5"/>',d:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',l:'<path d="M12 8v5M12 16.5v.5"/><circle cx="12" cy="12" r="8.5"/>',n:'<circle cx="12" cy="8" r="3.5"/><path d="M5 19c.8-3 3.6-4.8 7-4.8s6.2 1.8 7 4.8"/><path d="M17 4l4 4M21 4l-4 4"/>'};
+  const stat=(cls,ic,label,val,sub)=>`<div class="stat ${cls}"><div class="sh"><span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${IC[ic]}</svg></span>${esc(label)}</div><b>${val}</b><small>${esc(sub)}</small></div>`;
+  $('#hStats').innerHTML = stat('g','w',t('sWorking'),working,t('sWorkingS')) + stat('b','d',t('sDone'),done,t('sDoneS')) + stat('w','l',t('sLate'),late,t('sLateS')) + stat('r','n',t('sNotIn'),notIn.length,t('sNotInS').replace('{n}',emps.length));
+  // by location
+  const byLoc={}; H.rows.filter(isCurrent).forEach(r=>{ const k=r.loc||'-'; const o=byLoc[k]=byLoc[k]||{a:0,d:0}; if(r.c&&r.c.open) o.a++; else o.d++; });
+  S.cfg.locations.forEach(l=>{ byLoc[l.id]=byLoc[l.id]||{a:0,d:0}; });
+  const assigned={}; emps.forEach(e=>{ if(e.loc) assigned[e.loc]=(assigned[e.loc]||0)+1; });
+  const keys=Object.keys(byLoc).sort((a,b)=>(byLoc[b].a+byLoc[b].d)-(byLoc[a].a+byLoc[a].d));
+  $('#hLoc').innerHTML = keys.length ? keys.map(k=>{ const o=byLoc[k], tot=Math.max(assigned[k]||0,o.a+o.d,1);
+    return `<div class="locrow"><div class="lt"><span>${esc(nm(locBy(k))||k)}</span><span>${o.a+o.d}${assigned[k]?' / '+assigned[k]:''}</span></div><div class="sbar"><i class="a" style="width:${o.a/tot*100}%"></i><i class="d" style="width:${o.d/tot*100}%"></i></div></div>`; }).join('')
+    + `<div class="legend"><span style="--c:var(--good)">${esc(t('sWorking'))}</span><span style="--c:var(--blue)">${esc(t('sDone'))}</span></div>`
+    : `<div class="empty">${esc(t('noLoc'))}</div>`;
+  // latest
+  const ev=[]; H.rows.forEach(r=>{ if(r.in) ev.push({r,ty:'in',ts:r.in}); if(r.out) ev.push({r,ty:'out',ts:r.out}); }); ev.sort((a,b)=>b.ts-a.ts);
+  $('#hFeed').innerHTML = ev.length ? ev.slice(0,8).map(x=>{ const ph=S.faces[x.r.id]&&S.faces[x.r.id].photo; const d=new Date(x.ts);
+    return `<div class="it">${ph?`<img class="thumb" src="${ph}" alt="">`:'<span class="thumb"></span>'}<div style="min-width:0"><div style="font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(empName(x.r.id))}</div><div class="small muted">${esc(nm(locBy(x.ty==='out'?(x.r.outLoc||x.r.loc):x.r.loc)))}</div></div><div style="text-align:right"><span class="badge ${x.ty==='in'?'g':'i'}">${esc(t(x.ty==='in'?'mIn':'mOut'))}</span><div class="mono small">${pad(d.getHours())}:${pad(d.getMinutes())}</div></div></div>`; }).join('') : `<div class="empty">${esc(t('noScan'))}</div>`;
+  // not in / open
+  const person=(id,right)=>{ const e=S.emps[id]||{}; const ph=S.faces[id]&&S.faces[id].photo; return `<div class="mini">${ph?`<img class="thumb" src="${ph}" alt="">`:'<span class="thumb"></span>'}<div style="min-width:0"><div style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(empName(id))}</div><div class="small muted"><span class="mono">${esc(id)}</span> · ${esc(nm(locBy(e.loc)))}</div></div>${right}</div>`; };
+  $('#hNotInN').textContent=notIn.length; $('#hOpenN').textContent=open.length;
+  $('#hNotIn').innerHTML = notIn.length ? notIn.sort((a,b)=>a.id.localeCompare(b.id)).slice(0,50).map(e=>person(e.id,`<span class="badge">${esc(nm(shiftBy(e.shift)))}</span>`)).join('') : `<div class="empty">${esc(t('hAllIn'))}</div>`;
+  $('#hOpen').innerHTML = open.length ? open.map(r=>person(r.id,`<span class="badge b mono">${r.wd.slice(5)} ${fmtMin(r.c.in)}</span>`)).join('') : `<div class="empty">${esc(t('hNoOpen'))}</div>`;
+  $('#hSync').textContent = t('hUpdated')+' '+pad(new Date(H.at).getHours())+':'+pad(new Date(H.at).getMinutes());
+}
+
 /* ---------------- start ---------------- */
-applyLang();
+applyLang(); renderSync();
+(function(){ const st=LS.get('fc-site'), lg=LS.get('fc-logo'); if(st) $('#loginSite').textContent=st; if(lg) $('#loginLogo').innerHTML=`<img src="${esc(lg)}" alt="ZF">`; })();
 (function autoLogin(){ const p=LS.get('fc-pin'); if(p){ $('#rememberPin').checked=true; doLogin(p); } })();
 </script>
 </body>
